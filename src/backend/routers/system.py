@@ -25,7 +25,7 @@ async def search_music():
 
 @router.get("/changelog")
 async def get_changelog():
-    with open('./data/changelog.json') as f:
+    with open('./changelog.json') as f:
         return JSONResponse(json.loads(f.read()))
 
 

@@ -1,0 +1,12 @@
+[
+  {
+    "version": "0.1.0",
+    "added": [
+      "SwipeArr; A Tinder like interface to manage your libraries",
+      "DynaArr; An automated management system for Arr suite",
+      "Tool - Delete unmonitored; Delete all unmonitored files"
+    ],
+    "removed": [],
+    "changed": []
+  }
+]
