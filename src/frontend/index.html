@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta name="theme-color" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arr Tools</title>
+</head>
+
+<body>
+<div id="app"></div>
+<script type="module" src="/src/main.js"></script>
+<script>
+    const colorSchemeQuery = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+    );
+    const body = document.body;
+    if (colorSchemeQuery.matches) {
+        body.style.background = "#121212";
+    } else {
+        body.style.background = "#ffffff";
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+src/frontend/node_modules
+src/backend/__pycache__
+src/backend/data
+src/backend/.venv
+.git
+
+# Editor directories and files
+**/.idea
+**/.vscode
+**/*.suo
+**/*.ntvs*
+**/*.njsproj
+**/*.sln
+**/*.sw?

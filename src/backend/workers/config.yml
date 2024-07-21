@@ -1,0 +1,21 @@
+workers:
+#  workers.worker1:
+#    enabled: true
+#    schedule:
+#      type: startup
+#    max_runtime: null
+#    max_instances: 1
+  workers.radarr:
+    enabled: true
+    schedule:
+      type: interval
+      interval: 3
+    max_runtime: null
+    max_instances: 1
+  workers.sonarr:
+    enabled: true
+    schedule:
+      type: interval
+      interval: 3
+    max_runtime: null
+    max_instances: 1
