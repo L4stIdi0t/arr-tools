@@ -359,16 +359,7 @@ def change_quality(quality_changes):
                 sonarr.post_command("SeriesSearch", seriesId=serieId)
 
 
-def change_monitoring(monitoring_changes: list, monitor: bool):
-    allowed_changes = set()
-    exclude_tags_set = set(config.SONARR.exclude_tags_from_monitoring)
-    for item in monitoring_changes:
-        tags_set = set(item['tags'])
-        if bool(tags_set & exclude_tags_set):
-            continue
-        allowed_changes.add(item['id'])
 
-    sonarr.upd_series_editor({"monitored": monitor, "seriesIds": list(allowed_changes)})
 
 
 def delete_unmonitored_files(dry: bool = False, delete: list = ['episode']):
@@ -408,6 +399,22 @@ def delete_unmonitored_files(dry: bool = False, delete: list = ['episode']):
     return list(deletions_done)
 
 
+def change_monitoring(monitoring_changes: list, monitor: bool):
+    allowed_changes = set()
+    exclude_tags_set = set(config.SONARR.exclude_tags_from_monitoring)
+    for item in monitoring_changes:
+        tags_set = set(item['tags'])
+        if bool(tags_set & exclude_tags_set):
+            continue
+        allowed_changes.add(item['id'])
+
+    sonarr.upd_series_editor({"monitored": monitor, "seriesIds": list(allowed_changes)})
+
+    if monitor:
+        for _id in allowed_changes:
+            sonarr.post_command("SeriesSearch", seriesId=_id)
+
+
 def change_monitoring_episodes(monitoring_changes: list, monitor: bool):
     exclude_tags_set = set(config.SONARR.exclude_tags_from_monitoring)
     if monitor:
@@ -439,6 +446,11 @@ def change_monitoring_episodes(monitoring_changes: list, monitor: bool):
         allowed_changes.add(item['episode_id'])
 
     sonarr.upd_episode_monitor(list(allowed_changes), monitor)
+
+    if monitor:
+        unique_ids = set(item['id'] for item in monitoring_changes)
+        for _id in unique_ids:
+            sonarr.post_command("SeriesSearch", seriesId=_id)
 
 
 def main_run(dry: bool = False):
