@@ -305,10 +305,8 @@ async function permDelete(id, importListExclusion = true, deleteFiles = true) {
     notSeenItems[currentArr.value] = notSeenItems[currentArr.value].filter(item => item.id !== id);
     setPreviousItem()
     setNextItem()
-    // setItems();
 
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error deleting item:', error);
   }
