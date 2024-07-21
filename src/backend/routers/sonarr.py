@@ -16,35 +16,6 @@ sonarr = SonarrAPI(config.SONARR.base_url, config.SONARR.api_key)
 # endregion
 
 
-sonarr_keys = [
-    "title",
-    "sortTitle",
-    "status",
-    "overview",
-    "previousAiring",
-    "images",
-    "seasons",
-    "year",
-    "qualityProfileId",
-    "monitored",
-    "runtime",
-    "tvdbId",
-    "tvMazeId",
-    "tmdbId",
-    "imdbId",
-    "ratings",
-    "firstAired",
-    "lastAired",
-    "genres",
-    "tags",
-    "added",
-    "ended",
-    "genres",
-    "statistics",
-    "id"
-]
-
-
 @router.get("/info")
 def get_info():
     quality_profiles = [{k: v for k, v in d.items() if k in ['name', 'id']} for d in sonarr.get_quality_profile()]
@@ -58,7 +29,12 @@ def get_info():
 
 @router.get("/items", description="Get all series from Sonarr")
 def get_items():
-    return [{k: v for k, v in d.items() if k in sonarr_keys} for d in sonarr.get_series()]
+    return sonarr.get_series()
+
+
+@router.post("/item", description="Edit an item")
+def edit_item(item: dict):
+    return sonarr.upd_series(item)
 
 
 @router.delete("/item", description="Delete an item")

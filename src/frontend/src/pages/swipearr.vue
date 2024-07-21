@@ -196,6 +196,7 @@ db.version(1).stores({
 const showSettings = ref(false)
 const editItemDialog = ref(false)
 const showMoreInfo = ref(false)
+const interactionsDisabled = ref(false)
 
 const userSettings = reactive({
   visual: {
@@ -263,10 +264,10 @@ function setItems() {
   else if (nextItemIndex < 0) nextItemIndex = notSeenItems[currentArr.value].length - 1;
   nextItem.value = notSeenItems[currentArr.value][nextItemIndex]
 
-  currentItem.value.qualityProfileId = getQuality(currentItem.value.qualityProfileId) || currentItem.value.qualityProfileId
-  currentItem.value.tags = currentItem.value.tags.map(tag => getTag(tag) || tag);
-  nextItem.value.qualityProfileId = getQuality(nextItem.value.qualityProfileId)
-  nextItem.value.tags = nextItem.value.tags.map(tag => getTag(tag));
+  currentItem.value.qualityProfileIdText = getQuality(currentItem.value.qualityProfileId) || currentItem.value.qualityProfileId
+  currentItem.value.tagsText = currentItem.value.tags.map(tag => getTag(tag) || tag);
+  nextItem.value.qualityProfileIdText = getQuality(nextItem.value.qualityProfileId)
+  nextItem.value.tagsText = nextItem.value.tags.map(tag => getTag(tag));
 }
 
 const currentItemIndex = reactive({radarr: 0, sonarr: 0})
@@ -289,6 +290,7 @@ function setNextItem() {
 // region Tinder functions
 async function permDelete(id, importListExclusion = true, deleteFiles = true) {
   try {
+    interactionsDisabled.value = true;
     const url = `/api/${currentArr.value}/item?id=${id}&importListExclusion=${importListExclusion}&deleteFiles=${deleteFiles}`;
     const response = await fetch(url, {
       method: 'DELETE',
@@ -309,6 +311,8 @@ async function permDelete(id, importListExclusion = true, deleteFiles = true) {
     return await response.json();
   } catch (error) {
     console.error('Error deleting item:', error);
+  } finally {
+    interactionsDisabled.value = false;
   }
 }
 
@@ -316,8 +320,25 @@ function editItem() {
   editItemDialog.value = true;
 }
 
-function submitEdit() {
+async function submitEdit() {
+  // delete favorited and played keys
+  const item = { ...currentItem.value };
+  delete item.favorited;
+  delete item.played;
+  delete item.qualityProfileIdText;
+  delete item.tagsText;
 
+  fetch(`/api/${currentArr.value}/item`, {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(item)
+  })
+    .then(response => response.json())
+    .then(editItemDialog.value = false)
+    .catch(error => console.error('Error:', error));
 }
 
 // endregion
@@ -487,6 +508,8 @@ function setupInteraction() {
       ],
       listeners: {
         move(event) {
+          if (interactionsDisabled.value) return;
+
           const screenWidth = window.innerWidth;
           const screenHeight = window.innerHeight;
 
@@ -525,6 +548,8 @@ function setupInteraction() {
           }
         },
         end() {
+          if (interactionsDisabled.value) return;
+          
           const screenWidth = window.innerWidth;
           const screenHeight = window.innerHeight;
 

@@ -68,7 +68,7 @@ const getPosterImage = function (arrItem) {
             </v-col>
             <v-col v-if="userSettings.visual.qualityProfile.value" class="mt-n4" cols="12" lg="6" md="6" sm="12" xl="6" xs="12"
                    xxl="6">
-              <p>Quality: {{ currentItem.qualityProfileId }}</p>
+              <p>Quality: {{ currentItem.qualityProfileIdText }}</p>
             </v-col>
             <v-col v-if="userSettings.visual.added.value" class="mt-n4" cols="12" lg="6" md="6" sm="12" xl="6" xs="12"
                    xxl="6">
@@ -100,7 +100,7 @@ const getPosterImage = function (arrItem) {
           </v-chip-group>
 
           <v-chip-group v-if="userSettings.visual.tags.value" class="mt-n2">
-            <v-chip v-for="tag in currentItem.tags" :key="tag">
+            <v-chip v-for="tag in currentItem.tagsText" :key="tag">
               {{ tag }}
             </v-chip>
           </v-chip-group>
