@@ -23,7 +23,7 @@ app.include_router(sonarr.router, prefix="/api")
 app.include_router(mediaserver.router, prefix="/api")
 app.include_router(system.router, prefix="/api")
 
-os.makedirs("./static/assets", exist_ok=True) # Fix if using empty pull
+os.makedirs("./static/assets", exist_ok=True)  # Fix if using empty pull
 app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
 
 

@@ -319,7 +319,7 @@ def get_monitorable_items():
                 monitor_episodes.append(
                     {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
                      'tags': arr_item['tags']})
-            elif config.SONARR.base_monitoring_amount == 1and episode["episodeNumber"] <= 3:
+            elif config.SONARR.base_monitoring_amount == 1 and episode["episodeNumber"] <= 3:
                 monitor_episodes.append(
                     {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
                      'tags': arr_item['tags']})
@@ -381,9 +381,6 @@ def change_quality(quality_changes):
         if config.SONARR.search_for_quality_upgrades:
             for serieId in changes['seriesIds']:
                 sonarr.post_command("SeriesSearch", seriesId=serieId)
-
-
-
 
 
 def delete_unmonitored_files(dry: bool = False, delete: list = ['episode']):

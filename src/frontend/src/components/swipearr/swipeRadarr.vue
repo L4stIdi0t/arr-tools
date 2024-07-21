@@ -70,7 +70,8 @@ const getPosterImage = function (arrItem) {
                    xxl="6">
               <p>Year: {{ currentItem.year }}</p>
             </v-col>
-            <v-col v-if="userSettings.visual.qualityProfile.value" class="mt-n4" cols="12" lg="6" md="6" sm="12" xl="6" xs="12"
+            <v-col v-if="userSettings.visual.qualityProfile.value" class="mt-n4" cols="12" lg="6" md="6" sm="12" xl="6"
+                   xs="12"
                    xxl="6">
               <p>Quality: {{ currentItem.qualityProfileIdText }}</p>
             </v-col>
@@ -86,11 +87,14 @@ const getPosterImage = function (arrItem) {
           </v-row>
 
           <v-row v-if="userSettings.visual.links.value" class="show-links mb-4 mx-1" style="font-size: 0.8em">
-            <a v-if="userSettings.links.imdb.value && currentItem.imdbId && currentItem.imdbId !== 0" :href="`https://www.imdb.com/title/${currentItem.imdbId}`" class="mr-2"
+            <a v-if="userSettings.links.imdb.value && currentItem.imdbId && currentItem.imdbId !== 0"
+               :href="`https://www.imdb.com/title/${currentItem.imdbId}`" class="mr-2"
                target="_blank">IMDB</a>
-            <a v-if="userSettings.links.tvdb.value && currentItem.tvdbId && currentItem.tvdbId !== 0" :href="`http://www.thetvdb.com/?tab=movies&id=${currentItem.tvdbId}`" class="mr-2"
+            <a v-if="userSettings.links.tvdb.value && currentItem.tvdbId && currentItem.tvdbId !== 0"
+               :href="`http://www.thetvdb.com/?tab=movies&id=${currentItem.tvdbId}`" class="mr-2"
                target="_blank">TVDB</a>
-            <a v-if="userSettings.links.tmdb.value && currentItem.tmdbId && currentItem.tmdbId !== 0" :href="`https://www.themoviedb.org/movie/${currentItem.tmdbId}`" class="mr-2"
+            <a v-if="userSettings.links.tmdb.value && currentItem.tmdbId && currentItem.tmdbId !== 0"
+               :href="`https://www.themoviedb.org/movie/${currentItem.tmdbId}`" class="mr-2"
                target="_blank">TMDB</a>
             <a v-if="userSettings.links.website.value && currentItem.website" :href="currentItem.website" class="mr-2"
                target="_blank">Website</a>

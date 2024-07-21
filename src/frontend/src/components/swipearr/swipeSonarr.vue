@@ -35,7 +35,8 @@ const getPosterImage = function (arrItem) {
         <div class="ma-4">
           <div v-if="!currentItem" class="animated-background" style="width: 100%; padding-top: 150%"/>
           <v-img v-else :alt="`${currentItem.title} poster`" :draggable="false" :src='getPosterImage(currentItem)'>
-            <div v-if="currentItem.ended" style="width: 40%; padding-top: 40%; position: absolute; right: -20%; top: -20%; background-color: #f05050; transform: rotate(45deg);" />
+            <div v-if="currentItem.ended"
+                 style="width: 40%; padding-top: 40%; position: absolute; right: -20%; top: -20%; background-color: #f05050; transform: rotate(45deg);"/>
             <div style="width: 100%; position: absolute; bottom: 1.25em;">
               <v-icon v-if="currentItem.played" style="font-size: 5em; color: #00853d">mdi-check-bold</v-icon>
               <v-icon v-if="currentItem.favorited" style="font-size: 5em; color: #ff0000">mdi-heart</v-icon>
@@ -66,7 +67,8 @@ const getPosterImage = function (arrItem) {
                    xxl="6">
               <p>Year: {{ currentItem.year }}</p>
             </v-col>
-            <v-col v-if="userSettings.visual.qualityProfile.value" class="mt-n4" cols="12" lg="6" md="6" sm="12" xl="6" xs="12"
+            <v-col v-if="userSettings.visual.qualityProfile.value" class="mt-n4" cols="12" lg="6" md="6" sm="12" xl="6"
+                   xs="12"
                    xxl="6">
               <p>Quality: {{ currentItem.qualityProfileIdText }}</p>
             </v-col>
@@ -82,13 +84,17 @@ const getPosterImage = function (arrItem) {
           </v-row>
 
           <v-row v-if="userSettings.visual.links.value" class="show-links mb-4 mx-1" style="font-size: 0.8em">
-            <a v-if="userSettings.links.imdb.value && currentItem.imdbId && currentItem.imdbId !== 0" :href="`https://www.imdb.com/title/${currentItem.imdbId}`" class="mr-2"
+            <a v-if="userSettings.links.imdb.value && currentItem.imdbId && currentItem.imdbId !== 0"
+               :href="`https://www.imdb.com/title/${currentItem.imdbId}`" class="mr-2"
                target="_blank">IMDB</a>
-            <a v-if="userSettings.links.tvdb.value && currentItem.tvdbId && currentItem.tvdbId !== 0" :href="`http://www.thetvdb.com/?tab=series&id=${currentItem.tvdbId}`" class="mr-2"
+            <a v-if="userSettings.links.tvdb.value && currentItem.tvdbId && currentItem.tvdbId !== 0"
+               :href="`http://www.thetvdb.com/?tab=series&id=${currentItem.tvdbId}`" class="mr-2"
                target="_blank">TVDB</a>
-            <a v-if="userSettings.links.tmdb.value && currentItem.tmdbId && currentItem.tmdbId !== 0" :href="`https://www.themoviedb.org/tv/${currentItem.tmdbId}`" class="mr-2"
+            <a v-if="userSettings.links.tmdb.value && currentItem.tmdbId && currentItem.tmdbId !== 0"
+               :href="`https://www.themoviedb.org/tv/${currentItem.tmdbId}`" class="mr-2"
                target="_blank">TMDB</a>
-            <a v-if="userSettings.links.tvMaze.value && currentItem.tvMazeId && currentItem.tvMazeId !== 0" :href="`https://www.tvmaze.com/shows/${currentItem.tvMazeId}/_`" class="mr-2"
+            <a v-if="userSettings.links.tvMaze.value && currentItem.tvMazeId && currentItem.tvMazeId !== 0"
+               :href="`https://www.tvmaze.com/shows/${currentItem.tvMazeId}/_`" class="mr-2"
                target="_blank">TvMaze</a>
           </v-row>
 

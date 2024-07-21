@@ -16,7 +16,8 @@
               <h3>{{ sectionKey }}</h3>
             </v-row>
             <v-row v-for="(setting, settingKey) in section" :key="settingKey" class="mb-n8 ml-0">
-              <v-switch v-if="setting.type === 'switch'" v-model="userSettings[sectionKey][settingKey].value" :label="settingKey" color="secondary"
+              <v-switch v-if="setting.type === 'switch'" v-model="userSettings[sectionKey][settingKey].value"
+                        :label="settingKey" color="secondary"
                         inset/>
               <v-select v-else-if="setting.type === 'select'" v-model="userSettings[sectionKey][settingKey].value"
                         :items="setting.props.items" :label="settingKey"/>
@@ -48,7 +49,8 @@
         <div class="mt-4">
           <v-select v-model="currentItem.qualityProfileId" :items="arrInfo[currentArr].qualityProfiles"
                     item-title="name" item-value="id"/>
-          <v-autocomplete v-model="currentItem.tags" :items="arrInfo[currentArr].tags" chips closable-chips item-title="label"
+          <v-autocomplete v-model="currentItem.tags" :items="arrInfo[currentArr].tags" chips closable-chips
+                          item-title="label"
                           item-value="id" label="Tags" multiple/>
           <v-switch v-model="currentItem.monitored" color="secondary" inset label="Monitored"/>
         </div>
@@ -322,7 +324,7 @@ function editItem() {
 
 async function submitEdit() {
   // delete favorited and played keys
-  const item = { ...currentItem.value };
+  const item = {...currentItem.value};
   delete item.favorited;
   delete item.played;
   delete item.qualityProfileIdText;
@@ -549,7 +551,7 @@ function setupInteraction() {
         },
         end() {
           if (interactionsDisabled.value) return;
-          
+
           const screenWidth = window.innerWidth;
           const screenHeight = window.innerHeight;
 

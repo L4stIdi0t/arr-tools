@@ -145,7 +145,8 @@
         <v-switch v-model="newSettings.monitor_quality_changes" color="secondary" inset
                   label="Monitor on quality profile changed items"/>
 
-        <v-autocomplete v-model="newSettings.exclude_users_from_quality_upgrades" :items="mediaServerUsers" chips closable-chips
+        <v-autocomplete v-model="newSettings.exclude_users_from_quality_upgrades" :items="mediaServerUsers" chips
+                        closable-chips
                         item-title="Name" item-value="Id" label="Excluded users from quality upgrades"
                         multiple/>
         <v-autocomplete v-model="newSettings.exclude_tags_from_quality_upgrades" :items="tags" chips closable-chips
@@ -187,9 +188,11 @@
                   label="Mark popular items as monitored"/>
         <v-switch v-model="newSettings.mark_less_popular_as_monitored" color="secondary"
                   inset label="Mark less popular items as monitored"/>
-        <v-switch v-model="newSettings.mark_unpopular_as_monitored" :disabled="newSettings.mark_unpopular_as_unmonitored"
+        <v-switch v-model="newSettings.mark_unpopular_as_monitored"
+                  :disabled="newSettings.mark_unpopular_as_unmonitored"
                   color="secondary" inset label="Mark unpopular items as monitored"/>
-        <v-switch v-model="newSettings.mark_unpopular_as_unmonitored" :disabled="newSettings.mark_unpopular_as_monitored"
+        <v-switch v-model="newSettings.mark_unpopular_as_unmonitored"
+                  :disabled="newSettings.mark_unpopular_as_monitored"
                   color="secondary" inset label="Mark unpopular items as unmonitored"/>
         <v-autocomplete v-model="newSettings.monitoring_amount"
                         :items="monitoringOptions" item-title="name"
@@ -199,7 +202,8 @@
                         item-value="id" label="The minimum amount of items that should be monitored"/>
         <v-autocomplete v-model="newSettings.exclude_tags_from_monitoring" :items="tags" chips closable-chips
                         item-title="label" item-value="id" label="Excluded tags from monitoring" multiple/>
-        <v-autocomplete v-model="newSettings.exclude_users_from_monitoring" :items="mediaServerUsers" chips closable-chips
+        <v-autocomplete v-model="newSettings.exclude_users_from_monitoring" :items="mediaServerUsers" chips
+                        closable-chips
                         item-title="Name" item-value="Id" label="Excluded users from monitoring"
                         multiple/>
         <v-divider/>
