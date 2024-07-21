@@ -60,8 +60,7 @@ services:
 ## Want to-do:
 * Decaying watched episodes instead of instant delete
 * Expanded tag exclusion like disable unmonitoring
-* Expand filters and usage[docker-image_2.yml](.github%2Fworkflows%2Fdocker-image_2.yml)
-[docker-image.yml](.github%2Fworkflows%2Fdocker-image.yml)
+* Expand filters and usage
 * Web configurable running intervals
 * Mass items selector(Arrs already have this but you need to hit a small radio button)
 * Import/export playlists from external tools like spotify
