@@ -34,13 +34,22 @@ Unraid:
 Use the community app store
 
 Docker:
-```
-docker run --name arr-tools -p 9000:9000 -v $(pwd)/data:/app/backend/data myapp:latest
+```sh
+docker run --name arr-tools -p 9000:9000 -v $(pwd)/data:/app/backend/data ghcr.io/mah-thingies/arr-tools:latest
 ```
 
 Docker compose:
-```
-No docker image built yet
+```yml
+version: '3.8'
+
+services:
+  arr-tools:
+    image: ghcr.io/mah-thingies/arr-tools:latest
+    container_name: arr-tools
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./data:/app/backend/data
 ```
 
 ## Recommended things
