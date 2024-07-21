@@ -168,6 +168,9 @@ def get_monitorable_items():
     unpopular_items = []
     unmonitor = []
 
+    exclude_tags_set = set(config.SONARR.exclude_tags_from_monitoring)
+
+    # region Monitor & unmonitor series
     if config.SONARR.use_favorite and config.SONARR.mark_favorited_as_monitored:
         favorited_items = \
             media_server.get_all_favorites(ignore_user_ids=config.SONARR.exclude_users_from_monitoring)["Series"]
@@ -208,10 +211,31 @@ def get_monitorable_items():
     if config.SONARR.mark_unpopular_as_unmonitored:
         unmonitor += unpopular_items
 
-    exclude_tags_set = set(config.SONARR.exclude_tags_from_monitoring)
+    temp = []
+    for item in monitor:
+        item_tags = set(item['tags'])
+        if bool(item_tags & exclude_tags_set):
+            continue
+        temp.append(item)
+    monitor = temp
+    temp = []
+    for item in unmonitor:
+        item_tags = set(item['tags'])
+        if bool(item_tags & exclude_tags_set):
+            continue
+        temp.append(item)
+    unmonitor = temp
+    # endregion
 
-    max_played_episodes = media_server.get_max_played_episodes()
-    max_played_episodes_shows = [link_arr_to_media_server(item, arr_items) for item in max_played_episodes]
+    max_played_episodes = []
+    max_played_episodes_shows = []
+    for item in media_server.get_max_played_episodes():
+        arr_item = link_arr_to_media_server(item, arr_items)
+        if not arr_item:
+            continue
+        max_played_episodes.append(item)
+        max_played_episodes_shows.append(arr_item)
+
     monitor_episodes = []
     for idx in range(len(max_played_episodes)):
         if not max_played_episodes_shows[idx]:
@@ -270,7 +294,7 @@ def get_monitorable_items():
                                                      max_played_episodes_shows[idx])
     # endregion
 
-    # region Monitor base amount
+    # region Monitor base amount and create unmonitor episodes
     for arr_item in arr_items:
         tags_set = set(arr_item['tags'])
         if bool(exclude_tags_set & tags_set):
@@ -281,28 +305,28 @@ def get_monitorable_items():
 
         for episode in episodes_data:
             episode_id = episode['id']
-            if config.SONARR.base_monitoring_amount == 0 and episode["seasonNumber"] == 1:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': arr_item['tags']})
-            elif config.SONARR.base_monitoring_amount == 1 and episode["seasonNumber"] == 1 and episode[
-                "episodeNumber"] <= 3:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': arr_item['tags']})
-            elif config.SONARR.base_monitoring_amount == 2 and episode["seasonNumber"] == 1 and episode[
-                "episodeNumber"] <= 6:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': arr_item['tags']})
-            elif config.SONARR.base_monitoring_amount == 3:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': arr_item['tags']})
 
             unmonitor_episodes.append(
                 {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
                  'tags': arr_item['tags']})
+
+            if episode["seasonNumber"] != 1:
+                continue
+            if episode['monitored']:
+                continue
+
+            if config.SONARR.base_monitoring_amount == 0 or config.SONARR.base_monitoring_amount == 3:
+                monitor_episodes.append(
+                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
+                     'tags': arr_item['tags']})
+            elif config.SONARR.base_monitoring_amount == 1and episode["episodeNumber"] <= 3:
+                monitor_episodes.append(
+                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
+                     'tags': arr_item['tags']})
+            elif config.SONARR.base_monitoring_amount == 2 and episode["episodeNumber"] <= 6:
+                monitor_episodes.append(
+                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
+                     'tags': arr_item['tags']})
 
     monitored_ids = [item['episode_id'] for item in monitor_episodes]
     unmonitor_episodes = [episode for episode in unmonitor_episodes if episode['episode_id'] not in monitored_ids]
@@ -448,7 +472,7 @@ def change_monitoring_episodes(monitoring_changes: list, monitor: bool):
     sonarr.upd_episode_monitor(list(allowed_changes), monitor)
 
     if monitor:
-        unique_ids = set(item['id'] for item in monitoring_changes)
+        unique_ids = set(item['series_id'] for item in monitoring_changes)
         for _id in unique_ids:
             sonarr.post_command("SeriesSearch", seriesId=_id)
 
