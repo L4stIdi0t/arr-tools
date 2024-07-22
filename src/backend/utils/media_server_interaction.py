@@ -8,6 +8,7 @@ from database.database import get_program_db
 from models.media import FavoriteMovies, FavoriteSeries, OnResumeMovies, OnResumeSeries, PlayedMovies, PlayedSeries, \
     PlayedEpisodes
 from utils.custom_emby_api import EmbyAPI
+from utils.custom_jellyfin_api import JellyfinAPI
 
 
 class MediaServerinteracter:
@@ -16,8 +17,12 @@ class MediaServerinteracter:
         self.media_server_base_url = media_server_base_url
         self.media_server_api_key = media_server_api_key
 
-        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
-            self.client = EmbyAPI(self.media_server_api_key, self.media_server_base_url)
+        self.media_server_base_url = f"{media_server_base_url.rstrip('/')}"
+
+        if self.media_server_type == "emby":
+            self.client = EmbyAPI(self.media_server_api_key, f"{self.media_server_base_url}emby")
+        elif self.media_server_type == "jellyfin":
+            self.client = JellyfinAPI(self.media_server_api_key, self.media_server_base_url)
         else:
             raise Exception("Media server type not supported " + self.media_server_type)
 
