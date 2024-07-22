@@ -16,7 +16,7 @@ class MediaServerinteracter:
         self.media_server_base_url = media_server_base_url
         self.media_server_api_key = media_server_api_key
 
-        if self.media_server_type == "emby":
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
             self.client = EmbyAPI(self.media_server_api_key, self.media_server_base_url)
         else:
             raise Exception("Media server type not supported " + self.media_server_type)
