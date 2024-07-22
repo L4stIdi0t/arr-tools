@@ -20,7 +20,6 @@ async function getMediaServerSettings() {
   fetch("/api/mediaserver/settings")
     .then(response => response.json())
     .then(data => {
-      console.log(data)
       newSettings.value = {...data}
       retrievedSettings.value = data
     })
