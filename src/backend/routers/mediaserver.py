@@ -75,9 +75,9 @@ def get_settings() -> settings.MediaServerSettings:
 
 
 @router.post("/settings", description="Update Radarr settings")
-def post_settings(settings: settings.RadarrSettings):
+def post_settings(settings: settings.MediaServerSettings):
     config = config_manager.get_config()
-    config.RADARR = settings
+    config.MEDIASERVER = settings
     config_manager.save_config_file(config)
 
 # @router.get("/dry", description="Get the results of a dry run")
