@@ -11,6 +11,8 @@
 *.sln
 *.sw?
 
+/testing.py
+
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm+all,windows,linux,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm+all,windows,linux,venv
 
