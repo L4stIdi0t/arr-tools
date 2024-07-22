@@ -20,7 +20,7 @@ class MediaServerinteracter:
         self.media_server_base_url = f"{media_server_base_url.rstrip('/')}"
 
         if self.media_server_type == "emby":
-            self.client = EmbyAPI(self.media_server_api_key, f"{self.media_server_base_url}emby")
+            self.client = EmbyAPI(self.media_server_api_key, f"{self.media_server_base_url}/emby")
         elif self.media_server_type == "jellyfin":
             self.client = JellyfinAPI(self.media_server_api_key, self.media_server_base_url)
         else:
