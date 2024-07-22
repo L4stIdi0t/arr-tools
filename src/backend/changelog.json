@@ -1,5 +1,14 @@
 [
   {
+    "version": "0.1.1",
+    "added": [],
+    "removed": [],
+    "changed": [
+      "Fixed; API endpoints for Emby and Jellyfin",
+      "Fixed; Media server info not saving"
+    ]
+  },
+  {
     "version": "0.1.0",
     "added": [
       "SwipeArr; A Tinder like interface to manage your libraries",
