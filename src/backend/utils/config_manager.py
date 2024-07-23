@@ -28,15 +28,7 @@ class ConfigManager:
     def load_config_file(self):
         try:
             if not self.config_file_path.exists():
-                default_config = settings.Config(
-                    SONARR=settings.SonarrSettings(),
-                    RADARR=settings.RadarrSettings(),
-                    CONNECTIONS=settings.MediaServerSettings(),
-                    MEDIASERVER=settings.MediaServerSettings(),
-                    MISC=settings.MiscSettings()
-                )
-                self.save_config_file(default_config)
-                self.config_file_data = default_config
+                self.write_default_configs()
             else:
                 with open(self.config_file_path) as json_file:
                     self.config_file_data = settings.Config.model_validate(json.load(json_file))
