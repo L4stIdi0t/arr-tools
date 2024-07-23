@@ -30,23 +30,31 @@ const getPosterImage = function (arrItem) {
 
 <template>
   <v-card>
-    <v-row no-gutters>
-      <v-col v-if="mdAndUp || !showMoreInfo" cols="12" lg="6" md="6" xl="6" xxl="6">
+    <v-row no-gutters style="max-height: calc(100vh - 13.5em)">
+      <v-col v-if="mdAndUp || !showMoreInfo"
+             :class="{'col-12': !mdAndUp}"
+             cols="auto"
+             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: '100%', maxWidth: 'min(50%, calc((100vh - 15em) / 3 * 2))' }]">
         <div class="ma-4">
-          <div v-if="!currentItem" class="animated-background" style="width: 100%; padding-top: 150%"/>
-          <v-img v-else :alt="`${currentItem.title} poster`" :draggable="false" :src='getPosterImage(currentItem)'>
-            <div style="width: 100%; position: absolute; bottom: 1.25em;">
-              <v-icon v-if="currentItem.played" style="font-size: 5em; color: #00853d">mdi-check-bold</v-icon>
-              <v-icon v-if="currentItem.favorited" style="font-size: 5em; color: #ff0000">mdi-heart</v-icon>
+          <div v-if="!currentItem" class="animated-background" style="width: 100%; padding-top: 150%"></div>
+          <div v-else style="position: relative; max-height: calc(100vh - 15em); overflow: hidden; display: flex; justify-content: center; align-items: center;">
+            <v-img :alt="`${currentItem.title} poster`" :draggable="false" :src='getPosterImage(currentItem)' aspect-ratio="2/3" style="max-width: calc((100vh - 15em) / 3 * 2); height: auto;" />
+            <div style="width: 100%; max-width: calc((100vh - 15em) / 3 * 2); height: 100%; position: absolute; top: 0; left: max(0px, calc((100% - (100vh - 15em) / 3 * 2) / 2)); overflow: hidden;">
+              <div style="width: 100%; position: absolute; bottom: 1.25em;">
+                <v-icon v-if="currentItem.played" style="font-size: 5em; color: #00853d">mdi-check-bold</v-icon>
+                <v-icon v-if="currentItem.favorited" style="font-size: 5em; color: #ff0000">mdi-heart</v-icon>
+              </div>
+              <div :class="getColorClass" style="width: 100%; height: 1em; position: absolute; bottom: 0;"></div>
             </div>
-            <div :class="getColorClass" style="width: 100%; height: 1em; position: absolute; bottom: 0;"/>
-          </v-img>
+          </div>
         </div>
       </v-col>
-      <v-col v-if="currentItem && (mdAndUp || showMoreInfo)" :class="{'mt-4': true, 'mx-3': !mdAndUp}" cols="12" lg="6"
-             md="6" xl="6" xxl="6">
-        <div>
-          <v-row v-if="currentItem.youTubeTrailerId && userSettings.visual.youtube.value" class="video-container ma-0">
+      <v-col v-if="currentItem && (mdAndUp || showMoreInfo)"
+             :class="{'mt-4': true, 'mx-3': !mdAndUp, 'col-12': !mdAndUp}"
+             cols="auto"
+             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: 'calc(100% - min(50%, calc((100vh - 15em) / 3 * 2)))', height: '100%', maxHeight: 'calc((100vh - 15em) / 3 * 2)' }]">
+      <div>
+          <v-row v-if="currentItem.youTubeTrailerId && userSettings.visual.youtube.value" class="ma-0" style="width: 100%; height: 100%; max-height: max(calc(33vh - 15em), calc((100vh - 15em) / 3)); max-width: max(50%, calc(max(calc(33vh - 15em), calc((100vh - 15em) / 3)) / 9 * 16));">
             <iframe
               :src="`https://www.youtube-nocookie.com/embed/${currentItem.youTubeTrailerId}`"
               :title="currentItem.title"
@@ -54,7 +62,7 @@ const getPosterImage = function (arrItem) {
               allowfullscreen
               frameborder="0"
               referrerpolicy="strict-origin-when-cross-origin"
-              style="width: 100%; height: 100%;">
+              style="width: 100%; height: max(calc(33vh - 15em), calc((100vh - 15em) / 3));">
             </iframe>
           </v-row>
           <v-row class="mt-6">
@@ -146,14 +154,14 @@ const getPosterImage = function (arrItem) {
   animation: gradient 3s ease infinite;
 }
 
-.video-container {
+.video-containerrr {
   position: relative;
   width: 100%;
   padding-top: 56.25%; /* 16:9 Aspect Ratio */
   overflow: hidden;
 }
 
-.video-container iframe {
+.video-containerrr iframe {
   position: absolute;
   top: 0;
   left: 0;

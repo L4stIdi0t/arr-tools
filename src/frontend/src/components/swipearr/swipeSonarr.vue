@@ -30,23 +30,30 @@ const getPosterImage = function (arrItem) {
 
 <template>
   <v-card>
-    <v-row no-gutters>
-      <v-col v-if="mdAndUp || !showMoreInfo" cols="12" lg="6" md="6" xl="6" xxl="6">
+    <v-row no-gutters style="max-height: calc(100vh - 13.5em)">
+      <v-col v-if="mdAndUp || !showMoreInfo"
+             :class="{'col-12': !mdAndUp}"
+             cols="auto"
+             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: '100%', maxWidth: 'min(50%, calc((100vh - 15em) / 3 * 2))' }]">
         <div class="ma-4">
-          <div v-if="!currentItem" class="animated-background" style="width: 100%; padding-top: 150%"/>
-          <v-img v-else :alt="`${currentItem.title} poster`" :draggable="false" :src='getPosterImage(currentItem)'>
-            <div v-if="currentItem.ended"
-                 style="width: 40%; padding-top: 40%; position: absolute; right: -20%; top: -20%; background-color: #f05050; transform: rotate(45deg);"/>
-            <div style="width: 100%; position: absolute; bottom: 1.25em;">
-              <v-icon v-if="currentItem.played" style="font-size: 5em; color: #00853d">mdi-check-bold</v-icon>
-              <v-icon v-if="currentItem.favorited" style="font-size: 5em; color: #ff0000">mdi-heart</v-icon>
+          <div v-if="!currentItem" class="animated-background" style="width: 100%; padding-top: 150%"></div>
+          <div v-else style="position: relative; max-height: calc(100vh - 15em); overflow: hidden; display: flex; justify-content: center; align-items: center;">
+            <v-img :alt="`${currentItem.title} poster`" :draggable="false" :src='getPosterImage(currentItem)' aspect-ratio="2/3" style="max-width: calc((100vh - 15em) / 3 * 2); height: auto;" />
+            <div style="width: 100%; max-width: calc((100vh - 15em) / 3 * 2); height: 100%; position: absolute; top: 0; left: max(0px, calc((100% - (100vh - 15em) / 3 * 2) / 2)); overflow: hidden;">
+              <div v-if="currentItem.ended" style="width: 40%; padding-top: 40%; position: absolute; right: -20%; top: -20%; background-color: #f05050; transform: rotate(45deg);"></div>
+              <div style="width: 100%; position: absolute; bottom: 1.25em;">
+                <v-icon v-if="currentItem.played" style="font-size: 5em; color: #00853d">mdi-check-bold</v-icon>
+                <v-icon v-if="currentItem.favorited" style="font-size: 5em; color: #ff0000">mdi-heart</v-icon>
+              </div>
+              <div :class="getColorClass" style="width: 100%; height: 1em; position: absolute; bottom: 0;"></div>
             </div>
-            <div :class="getColorClass" style="width: 100%; height: 1em; position: absolute; bottom: 0;"/>
-          </v-img>
+          </div>
         </div>
       </v-col>
-      <v-col v-if="currentItem && (mdAndUp || showMoreInfo)" :class="{'mt-4': true, 'mx-3': !mdAndUp}" cols="12" lg="6"
-             md="6" xl="6" xxl="6">
+      <v-col v-if="currentItem && (mdAndUp || showMoreInfo)"
+             :class="{'mt-4': true, 'mx-3': !mdAndUp, 'col-12': !mdAndUp}"
+             cols="auto"
+             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: 'calc(100% - min(50%, calc((100vh - 15em) / 3 * 2)))', height: '100%', maxHeight: 'calc((100vh - 15em) / 3 * 2)' }]">
         <div>
           <v-row>
 
@@ -163,5 +170,40 @@ const getPosterImage = function (arrItem) {
 .show-links {
   text-decoration: underline;
   color: dodgerblue;
+}
+
+
+.poster-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.image-container {
+  height: 100%;
+  width: 100%;
+  max-width: calc((100vh - 15.5em) / 3 * 2);
+  max-height: calc(100vh - 15.5em);
+  overflow: hidden;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 15.5em);
+}
+
+.image-overlay {
+  z-index: 20;
+  max-width: calc((100vh - 15.5em) / 3 * 2);
+  max-height: calc(100vh - 15.5em);
+  overflow: hidden;
+}
+
+.ended-badge {
+  max-width: calc((100vh - 15.5em) / 3 * 2);;
+  width: 40%; padding-top: 40%; position: absolute; right: -20%; top: -20%; background-color: #f05050; transform: rotate(45deg);
 }
 </style>
