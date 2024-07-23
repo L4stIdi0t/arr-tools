@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.1.2",
+    "added": [
+      "DynaArr; Checks if Arr instances are busy searching"
+    ],
+    "removed": [],
+    "changed": [
+      "Fixed; Search requests going crazy",
+      "Fixed; UI Swipearr for devices with not enough height"
+    ]
+  },
+  {
     "version": "0.1.1",
     "added": [],
     "removed": [],
