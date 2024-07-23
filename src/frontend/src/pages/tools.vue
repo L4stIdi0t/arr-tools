@@ -5,7 +5,12 @@
         Output:
       </v-card-title>
       <v-card-text>
-        {{ output }}
+        <div v-if="String(output).length === 0">
+          No Changes
+        </div>
+        <div v-else>
+          {{ output }}
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-btn color="primary" variant="elevated" @click="showOutput = false">Close</v-btn>
