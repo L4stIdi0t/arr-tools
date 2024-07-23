@@ -128,9 +128,13 @@ def _monitor_episodes_ahead(episodes, season_number, episode_number, ahead_count
 
         if count <= ahead_count and count != 0:
             count += 1
-            episode_ids.append(
-                {'episode_id': episode['id'], 'series_id': series['id'], 'season_number': episode['seasonNumber'],
-                 'tags': series['tags']})
+            episode_ids.append({
+                    'episode_id': episode['id'],
+                    'series_id': series['id'],
+                    'monitored': episode['monitored'],
+                    'season_number': episode['seasonNumber'],
+                    'tags': series['tags']
+                })
 
         if count > ahead_count:
             continue
@@ -150,9 +154,13 @@ def _monitor_episodes_behind(episodes, season_number, episode_number, ahead_coun
             count += 1
             if (season_number == 0 and episode['seasonNumber'] == 0) or (
                     season_number != 0 and episode['seasonNumber'] != 0):
-                episode_ids.append(
-                    {'episode_id': episode['id'], 'series_id': series['id'], 'season_number': episode['seasonNumber'],
-                     'tags': series['tags']})
+                episode_ids.append({
+                    'episode_id': episode['id'],
+                    'series_id': series['id'],
+                    'monitored': episode['monitored'],
+                    'season_number': episode['seasonNumber'],
+                    'tags': series['tags']
+                })
 
             if count > ahead_count:
                 continue
@@ -227,6 +235,7 @@ def get_monitorable_items():
     unmonitor = temp
     # endregion
 
+    # region Monitor episodes based on users watched episodes
     max_played_episodes = []
     max_played_episodes_shows = []
     for item in media_server.get_max_played_episodes():
@@ -255,12 +264,18 @@ def get_monitorable_items():
 
         for episode in episodes_data:
             episode_id = episode['id']
+            monitoring_item = {
+                    'episode_id': episode_id,
+                    'series_id': series_id,
+                    'season_number': episode['seasonNumber'],
+                    'tags': max_played_episodes_shows[idx]['tags'],
+                    'monitored': episode['monitored']
+                }
+
             if config.SONARR.monitoring_amount == 0 and any(
                     episode['seasonNumber'] == max_episode['Season'] for max_episode in
                     max_played_episodes[idx]["Episodes"]):
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': max_played_episodes_shows[idx]['tags']})
+                monitor_episodes.append(monitoring_item)
             # A big mess which i am too lazy to clean but should work just fine
             elif config.SONARR.monitoring_amount == 0:
                 for max_episode in max_played_episodes[idx]["Episodes"]:
@@ -269,13 +284,9 @@ def get_monitorable_items():
                             for episode in episodes_data:
                                 if any(episode['seasonNumber'] + 1 == max_episode['Season'] for max_episode in
                                        max_played_episodes[idx]["Episodes"]):
-                                    monitor_episodes.append({'episode_id': episode_id, 'series_id': series_id,
-                                                             'season_number': episode['seasonNumber'],
-                                                             'tags': max_played_episodes_shows[idx]['tags']})
+                                    monitor_episodes.append(monitoring_item)
             elif config.SONARR.monitoring_amount == 3:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': max_played_episodes_shows[idx]['tags']})
+                monitor_episodes.append(monitoring_item)
             else:
                 for max_episode in max_played_episodes[idx]["Episodes"]:
                     if config.SONARR.monitoring_amount == 1:
@@ -306,27 +317,21 @@ def get_monitorable_items():
         for episode in episodes_data:
             episode_id = episode['id']
 
-            unmonitor_episodes.append(
-                {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                 'tags': arr_item['tags']})
+            monitoring_item = {
+                    'episode_id': episode_id,
+                    'series_id': series_id,
+                    'season_number': episode['seasonNumber'],
+                    'tags': arr_item['tags'],
+                    'monitored': episode['monitored']
+                }
 
-            if episode["seasonNumber"] != 1:
-                continue
-            if episode['monitored']:
+            unmonitor_episodes.append(monitoring_item)
+
+            if episode["seasonNumber"] != 1 and config.SONARR.base_monitoring_amount != 3:
                 continue
 
-            if config.SONARR.base_monitoring_amount == 0 or config.SONARR.base_monitoring_amount == 3:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': arr_item['tags']})
-            elif config.SONARR.base_monitoring_amount == 1 and episode["episodeNumber"] <= 3:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': arr_item['tags']})
-            elif config.SONARR.base_monitoring_amount == 2 and episode["episodeNumber"] <= 6:
-                monitor_episodes.append(
-                    {'episode_id': episode_id, 'series_id': series_id, 'season_number': episode['seasonNumber'],
-                     'tags': arr_item['tags']})
+            if config.SONARR.base_monitoring_amount == 0 or config.SONARR.base_monitoring_amount == 3 or (config.SONARR.base_monitoring_amount == 1 and episode["episodeNumber"] <= 3) or (config.SONARR.base_monitoring_amount == 2 and episode["episodeNumber"] <= 6):
+                monitor_episodes.append(monitoring_item)
 
     monitored_ids = [item['episode_id'] for item in monitor_episodes]
     unmonitor_episodes = [episode for episode in unmonitor_episodes if episode['episode_id'] not in monitored_ids]
@@ -424,6 +429,7 @@ def change_monitoring(monitoring_changes: list, monitor: bool):
     allowed_changes = set()
     exclude_tags_set = set(config.SONARR.exclude_tags_from_monitoring)
     for item in monitoring_changes:
+        print(item)
         tags_set = set(item['tags'])
         if bool(tags_set & exclude_tags_set):
             continue
@@ -460,18 +466,29 @@ def change_monitoring_episodes(monitoring_changes: list, monitor: bool):
                 sonarr.upd_series(found_series)
 
     allowed_changes = set()
+    search_series = set()
     for item in monitoring_changes:
         tags_set = set(item['tags'])
         if bool(tags_set & exclude_tags_set):
             continue
+        if item['monitored'] == monitor:
+            continue
         allowed_changes.add(item['episode_id'])
+        search_series.add(item['series_id'])
 
     sonarr.upd_episode_monitor(list(allowed_changes), monitor)
 
     if monitor:
-        unique_ids = set(item['series_id'] for item in monitoring_changes)
-        for _id in unique_ids:
+        for _id in search_series:
             sonarr.post_command("SeriesSearch", seriesId=_id)
+
+
+def check_if_sonarr_is_busy():
+    commands = sonarr.get_command()
+    for command in commands:
+        if 'search' in command['name'].lower() and command['status'] != 'completed':
+            return True
+    return False
 
 
 def main_run(dry: bool = False):
@@ -483,6 +500,9 @@ def main_run(dry: bool = False):
 
     if not config.SONARR.enabled and not dry:
         print("Sonarr disabled, doing nothing")
+        return
+    if check_if_sonarr_is_busy() and not dry:
+        print("Sonarr is busy, doing nothing")
         return
 
     arr_items = sonarr.get_series()

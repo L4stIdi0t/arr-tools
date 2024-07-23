@@ -269,6 +269,14 @@ def delete_unmonitored_files(dry: bool = False):
     return list(deletions_done)
 
 
+def check_if_radarr_is_busy():
+    commands = radarr.get_command()
+    for command in commands:
+        if 'search' in command['name'].lower() and command['status'] != 'completed':
+            return True
+    return False
+
+
 def main_run(dry: bool = False):
     # Used in case the arr is managed while updating and there is a difference in length
     global arr_items, config, now_time
@@ -278,6 +286,9 @@ def main_run(dry: bool = False):
 
     if not config.RADARR.enabled and not dry:
         print("Radarr disabled, doing nothing")
+        return
+    if check_if_radarr_is_busy() and not dry:
+        print("Radarr is busy, doing nothing")
         return
 
     arr_items = radarr.get_movie()
