@@ -1,4 +1,3 @@
-import requests
 from utils.custom_emby_api import EmbyAPI
 
 

@@ -138,6 +138,7 @@ def link_arr_to_media_server(media_server_item: dict, arr_items: list) -> dict:
         if arr_title == original_title or (title == arr_title and year == arr_year):
             return arr_item
 
+
 def combine_tuples(tuples: List[Tuple[int, List[int]]]) -> List[Tuple[int, List[int]]]:
     combined_dict = defaultdict(list)
 

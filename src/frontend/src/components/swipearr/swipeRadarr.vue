@@ -33,13 +33,16 @@ const getPosterImage = function (arrItem) {
     <v-row no-gutters style="max-height: calc(100vh - 13.5em)">
       <v-col v-if="mdAndUp || !showMoreInfo"
              :class="{'col-12': !mdAndUp}"
-             cols="auto"
-             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: '100%', maxWidth: 'min(50%, calc((100vh - 15em) / 3 * 2))' }]">
+             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: '100%', maxWidth: 'min(50%, calc((100vh - 15em) / 3 * 2))' }]"
+             cols="auto">
         <div class="ma-4">
           <div v-if="!currentItem" class="animated-background" style="width: 100%; padding-top: 150%"></div>
-          <div v-else style="position: relative; max-height: calc(100vh - 15em); overflow: hidden; display: flex; justify-content: center; align-items: center;">
-            <v-img :alt="`${currentItem.title} poster`" :draggable="false" :src='getPosterImage(currentItem)' aspect-ratio="2/3" style="max-width: calc((100vh - 15em) / 3 * 2); height: auto;" />
-            <div style="width: 100%; max-width: calc((100vh - 15em) / 3 * 2); height: 100%; position: absolute; top: 0; left: max(0px, calc((100% - (100vh - 15em) / 3 * 2) / 2)); overflow: hidden;">
+          <div v-else
+               style="position: relative; max-height: calc(100vh - 15em); overflow: hidden; display: flex; justify-content: center; align-items: center;">
+            <v-img :alt="`${currentItem.title} poster`" :draggable="false" :src='getPosterImage(currentItem)'
+                   aspect-ratio="2/3" style="max-width: calc((100vh - 15em) / 3 * 2); height: auto;"/>
+            <div
+              style="width: 100%; max-width: calc((100vh - 15em) / 3 * 2); height: 100%; position: absolute; top: 0; left: max(0px, calc((100% - (100vh - 15em) / 3 * 2) / 2)); overflow: hidden;">
               <div style="width: 100%; position: absolute; bottom: 1.25em;">
                 <v-icon v-if="currentItem.played" style="font-size: 5em; color: #00853d">mdi-check-bold</v-icon>
                 <v-icon v-if="currentItem.favorited" style="font-size: 5em; color: #ff0000">mdi-heart</v-icon>
@@ -51,10 +54,11 @@ const getPosterImage = function (arrItem) {
       </v-col>
       <v-col v-if="currentItem && (mdAndUp || showMoreInfo)"
              :class="{'mt-4': true, 'mx-3': !mdAndUp, 'col-12': !mdAndUp}"
-             cols="auto"
-             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: 'calc(100% - min(50%, calc((100vh - 15em) / 3 * 2)))', height: '100%', maxHeight: 'calc((100vh - 15em) / 3 * 2)' }]">
-      <div>
-          <v-row v-if="currentItem.youTubeTrailerId && userSettings.visual.youtube.value" class="ma-0" style="width: 100%; height: 100%; max-height: max(calc(33vh - 15em), calc((100vh - 15em) / 3)); max-width: max(50%, calc(max(calc(33vh - 15em), calc((100vh - 15em) / 3)) / 9 * 16));">
+             :style="[!mdAndUp ? { width: '100%', maxWidth: '100%' } : { width: 'calc(100% - min(50%, calc((100vh - 15em) / 3 * 2)))', height: '100%', maxHeight: 'calc((100vh - 15em) / 3 * 2)' }]"
+             cols="auto">
+        <div>
+          <v-row v-if="currentItem.youTubeTrailerId && userSettings.visual.youtube.value" class="ma-0"
+                 style="width: 100%; height: 100%; max-height: max(calc(33vh - 15em), calc((100vh - 15em) / 3)); max-width: max(50%, calc(max(calc(33vh - 15em), calc((100vh - 15em) / 3)) / 9 * 16));">
             <iframe
               :src="`https://www.youtube-nocookie.com/embed/${currentItem.youTubeTrailerId}`"
               :title="currentItem.title"

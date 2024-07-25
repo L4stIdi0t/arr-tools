@@ -129,12 +129,12 @@ def _monitor_episodes_ahead(episodes, season_number, episode_number, ahead_count
         if count <= ahead_count and count != 0:
             count += 1
             episode_ids.append({
-                    'episode_id': episode['id'],
-                    'series_id': series['id'],
-                    'monitored': episode['monitored'],
-                    'season_number': episode['seasonNumber'],
-                    'tags': series['tags']
-                })
+                'episode_id': episode['id'],
+                'series_id': series['id'],
+                'monitored': episode['monitored'],
+                'season_number': episode['seasonNumber'],
+                'tags': series['tags']
+            })
 
         if count > ahead_count:
             continue
@@ -265,12 +265,12 @@ def get_monitorable_items():
         for episode in episodes_data:
             episode_id = episode['id']
             monitoring_item = {
-                    'episode_id': episode_id,
-                    'series_id': series_id,
-                    'season_number': episode['seasonNumber'],
-                    'tags': max_played_episodes_shows[idx]['tags'],
-                    'monitored': episode['monitored']
-                }
+                'episode_id': episode_id,
+                'series_id': series_id,
+                'season_number': episode['seasonNumber'],
+                'tags': max_played_episodes_shows[idx]['tags'],
+                'monitored': episode['monitored']
+            }
 
             if config.SONARR.monitoring_amount == 0 and any(
                     episode['seasonNumber'] == max_episode['Season'] for max_episode in
@@ -318,19 +318,21 @@ def get_monitorable_items():
             episode_id = episode['id']
 
             monitoring_item = {
-                    'episode_id': episode_id,
-                    'series_id': series_id,
-                    'season_number': episode['seasonNumber'],
-                    'tags': arr_item['tags'],
-                    'monitored': episode['monitored']
-                }
+                'episode_id': episode_id,
+                'series_id': series_id,
+                'season_number': episode['seasonNumber'],
+                'tags': arr_item['tags'],
+                'monitored': episode['monitored']
+            }
 
             unmonitor_episodes.append(monitoring_item)
 
             if episode["seasonNumber"] != 1 and config.SONARR.base_monitoring_amount != 3:
                 continue
 
-            if config.SONARR.base_monitoring_amount == 0 or config.SONARR.base_monitoring_amount == 3 or (config.SONARR.base_monitoring_amount == 1 and episode["episodeNumber"] <= 3) or (config.SONARR.base_monitoring_amount == 2 and episode["episodeNumber"] <= 6):
+            if config.SONARR.base_monitoring_amount == 0 or config.SONARR.base_monitoring_amount == 3 or (
+                    config.SONARR.base_monitoring_amount == 1 and episode["episodeNumber"] <= 3) or (
+                    config.SONARR.base_monitoring_amount == 2 and episode["episodeNumber"] <= 6):
                 monitor_episodes.append(monitoring_item)
 
     monitored_ids = [item['episode_id'] for item in monitor_episodes]
