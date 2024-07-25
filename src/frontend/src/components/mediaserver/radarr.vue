@@ -307,9 +307,6 @@ const fields = [
   "title",
   "sortTitle",
   "year",
-  "qualityProfileId",
-  "hasFile",
-  "monitored",
   "runtime",
   "genres",
   "tags",
@@ -319,8 +316,7 @@ const fields = [
   "ratings.tmdb.value",
   "ratings.metacritic.value",
   "ratings.rottenTomatoes.value",
-  "popularity",
-  "id"
+  "popularity"
 ];
 
 const filterFields = fields.map(field => ({
