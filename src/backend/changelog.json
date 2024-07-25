@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.1.3",
+    "added": [
+      "SwipeArr; Tv shows now display total episode and season count"
+    ],
+    "removed": [],
+    "changed": []
+  },
+  {
     "version": "0.1.2",
     "added": [
       "DynaArr; Checks if Arr instances are busy searching"
@@ -7,7 +15,7 @@
     "removed": [],
     "changed": [
       "Fixed; Search requests going crazy",
-      "Fixed; UI Swipearr for devices with not enough height"
+      "Fixed; UI SwipeArr for devices with not enough height"
     ]
   },
   {
