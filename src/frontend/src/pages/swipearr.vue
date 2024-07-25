@@ -210,6 +210,8 @@ const userSettings = reactive({
     year: {type: 'switch', value: true},
     qualityProfile: {type: 'switch', value: true},
     added: {type: 'switch', value: true},
+    seasonCount: {type: 'switch', value: true},
+    episodeCount: {type: 'switch', value: true},
     genres: {type: 'switch', value: true},
     tags: {type: 'switch', value: true},
     overview: {type: 'switch', value: true},
@@ -366,18 +368,35 @@ async function getItems() {
   arrInfo.sonarr.tags = sonarrInfo.tags;
 }
 
+
 function loadSettings() {
   const savedSettings = localStorage.getItem('userSettings');
+  let settings = null
   if (savedSettings) {
-    Object.assign(userSettings, JSON.parse(savedSettings));
+    settings = JSON.parse(savedSettings)
   }
   if (userSettings.sorting.sync.value) {
     fetch("/api/system/user-settings").then(response => response.json()).then(data => {
       if (data) {
-        Object.assign(userSettings, data);
-        localStorage.setItem('userSettings', JSON.stringify(userSettings));
+        settings = JSON.parse(savedSettings);
+        localStorage.setItem('userSettings', JSON.stringify(settings));
       }
     });
+  }
+  // Update userSettings with keys from settings only if they exist in both
+  if (settings) {
+    Object.keys(userSettings).forEach(category => {
+      if (settings.hasOwnProperty(category)) {
+        Object.keys(userSettings[category]).forEach(key => {
+          console.log("Key: ", key);
+          if (settings[category].hasOwnProperty(key)) {
+            userSettings[category][key] = settings[category][key];
+          }
+        });
+      }
+    });
+  } else {
+    console.error('Settings not found');
   }
 }
 
