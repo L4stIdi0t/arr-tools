@@ -317,15 +317,13 @@ const fields = [
   "title",
   "sortTitle",
   "year",
-  "qualityProfileId",
-  "hasFile",
-  "monitored",
   "runtime",
   "genres",
   "tags",
   "ratings.votes",
   "ratings.value",
-  "id"
+  "statistics.seasonCount",
+  "statistics.totalEpisodeCount",
 ];
 
 const filterFields = fields.map(field => ({
