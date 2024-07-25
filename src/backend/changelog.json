@@ -2,9 +2,12 @@
   {
     "version": "0.1.3",
     "added": [
-      "SwipeArr; Tv shows now display total episode and season count"
+      "SwipeArr; Tv shows now display total episode and season count",
+      "DynaArr; Episode and season filters"
     ],
-    "removed": [],
+    "removed": [
+      "DynaArr; id, qualityProfileId, hasFile and monitored UI filters"
+    ],
     "changed": []
   },
   {
