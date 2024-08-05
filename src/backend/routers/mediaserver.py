@@ -18,6 +18,7 @@ config = config_manager.get_config()
 
 @router.get("/info")
 def get_info():
+    config = config_manager.get_config()
     media_server = MediaServerinteracter(config.MEDIASERVER.media_server_type, config.MEDIASERVER.media_server_base_url,
                                          config.MEDIASERVER.media_server_api_key)
     users = media_server.get_users()
@@ -29,6 +30,7 @@ def get_info():
 
 @router.get("/media-info")
 def get_media_info():
+    config = config_manager.get_config()
     media_server = MediaServerinteracter(config.MEDIASERVER.media_server_type, config.MEDIASERVER.media_server_base_url,
                                          config.MEDIASERVER.media_server_api_key)
     sonarr = customSonarAPI(config.SONARR.base_url, config.SONARR.api_key)

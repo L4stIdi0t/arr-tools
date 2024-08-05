@@ -19,6 +19,8 @@ sonarr = SonarrAPI(config.SONARR.base_url, config.SONARR.api_key)
 
 @router.get("/info")
 def get_info():
+    config = config_manager.get_config()
+    sonarr = SonarrAPI(config.SONARR.base_url, config.SONARR.api_key)
     quality_profiles = [{k: v for k, v in d.items() if k in ['name', 'id']} for d in sonarr.get_quality_profile()]
     tags = [{k: v for k, v in d.items() if k in ['label', 'id']} for d in sonarr.get_tag()]
 
@@ -30,6 +32,8 @@ def get_info():
 
 @router.get("/items", description="Get all series from Sonarr")
 def get_items():
+    config = config_manager.get_config()
+    sonarr = SonarrAPI(config.SONARR.base_url, config.SONARR.api_key)
     return sonarr.get_series()
 
 
