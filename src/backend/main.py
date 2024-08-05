@@ -25,6 +25,8 @@ app.include_router(system.router, prefix="/api")
 
 os.makedirs("./static/assets", exist_ok=True)  # Fix if using empty pull
 app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
+os.makedirs("./static/favicon", exist_ok=True)  # Fix if using empty pull
+app.mount("/favicon", StaticFiles(directory="static/favicon"), name="favicon")
 
 
 @app.get("/{path:path}")
