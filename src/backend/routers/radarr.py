@@ -1,9 +1,12 @@
+import logging
+
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from pyarr import RadarrAPI
 
 import schemas.settings as settings
 from utils.config_manager import ConfigManager
+from utils.log_manager import LoggingManager
 from workers.radarr import delete_unmonitored_files
 from workers.radarr import run as radarr_run
 
@@ -12,6 +15,7 @@ router = APIRouter(prefix="/radarr", tags=["Radarr"])
 config_manager = ConfigManager()
 config = config_manager.get_config()
 radarr = RadarrAPI(config.RADARR.base_url, config.RADARR.api_key)
+logging_manager = LoggingManager()
 
 # endregion
 
@@ -60,6 +64,7 @@ def get_settings() -> settings.RadarrSettings:
 
 @router.post("/settings", description="Update Radarr settings")
 def post_settings(settings: settings.RadarrSettings):
+    logging_manager.log('Updating Radarr settings', level=logging.DEBUG)
     config = config_manager.get_config()
     config.RADARR = settings
     config_manager.save_config_file(config)

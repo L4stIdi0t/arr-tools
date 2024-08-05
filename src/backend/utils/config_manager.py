@@ -1,10 +1,13 @@
 import json
+import logging
 from pathlib import Path
 
 import pydantic_core
 
 import schemas.settings as settings
+from utils.log_manager import LoggingManager
 
+logging_manager = LoggingManager()
 
 class ConfigManager:
     def __init__(self, config_file_path: str = './data/config.json'):
@@ -13,6 +16,7 @@ class ConfigManager:
         self.load_config_file()
 
     def write_default_configs(self):
+        logging_manager.log('Writing default config', level=logging.INFO)
         default_config = settings.Config(
             SONARR=settings.SonarrSettings(),
             RADARR=settings.RadarrSettings(),
@@ -33,11 +37,15 @@ class ConfigManager:
                 with open(self.config_file_path) as json_file:
                     self.config_file_data = settings.Config.model_validate(json.load(json_file))
         except pydantic_core._pydantic_core.ValidationError:
+            logging_manager.log('Config file is invalid, writing default config', level=logging.WARNING)
             self.write_default_configs()
         except FileNotFoundError:
+            logging_manager.log('Config file not found, writing default config', level=logging.WARNING)
             self.write_default_configs()
 
     def save_config_file(self, config_data: settings.Config):
+        logging_manager.log('Saving config file', level=logging.DEBUG)
+        logging_manager.log(config_data.model_dump_json(indent=4), level=logging.DEBUG)
         with open(self.config_file_path, 'w') as f:
             json.dump(config_data.model_dump(), f, indent=4)
 

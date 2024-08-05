@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter
 from pyarr import RadarrAPI
 
@@ -5,13 +7,14 @@ import schemas.settings as settings
 from utils.config_manager import ConfigManager
 from utils.customSonarApi import customSonarAPI
 from utils.general_arr_actions import link_arr_to_media_server
+from utils.log_manager import LoggingManager
 from utils.media_server_interaction import MediaServerinteracter
 
 # region Configuration and Setup
 router = APIRouter(prefix="/mediaserver", tags=["Media server"])
 config_manager = ConfigManager()
 config = config_manager.get_config()
-
+logging_manager = LoggingManager()
 
 # endregion
 
@@ -78,6 +81,7 @@ def get_settings() -> settings.MediaServerSettings:
 
 @router.post("/settings", description="Update Radarr settings")
 def post_settings(settings: settings.MediaServerSettings):
+    logging_manager.log('Updating Mediaserver settings', level=logging.DEBUG)
     config = config_manager.get_config()
     config.MEDIASERVER = settings
     config_manager.save_config_file(config)

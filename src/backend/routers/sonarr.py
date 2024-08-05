@@ -1,9 +1,12 @@
+import logging
+
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from pyarr import SonarrAPI
 
 import schemas.settings as settings
 from utils.config_manager import ConfigManager
+from utils.log_manager import LoggingManager
 from workers.sonarr import delete_unmonitored_files
 from workers.sonarr import run as sonarr_run
 
@@ -12,7 +15,7 @@ router = APIRouter(prefix="/sonarr", tags=["Sonarr"])
 config_manager = ConfigManager()
 config = config_manager.get_config()
 sonarr = SonarrAPI(config.SONARR.base_url, config.SONARR.api_key)
-
+logging_manager = LoggingManager()
 
 # endregion
 
@@ -61,6 +64,7 @@ def get_settings() -> settings.SonarrSettings:
 
 @router.post("/settings", description="Update Sonarr settings")
 def post_settings(settings: settings.SonarrSettings):
+    logging_manager.log('Updating Sonarr settings', level=logging.DEBUG)
     config = config_manager.get_config()
     config.SONARR = settings
     config_manager.save_config_file(config)
