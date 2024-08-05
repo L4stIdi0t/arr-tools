@@ -1,5 +1,15 @@
 [
   {
+    "version": "0.1.4",
+    "added": [
+      "Debug logs, creating a file named DEBUG in the /data directory will enable debug logging"
+    ],
+    "removed": [],
+    "changed": [
+      "Repo transferred to a different user"
+    ]
+  },
+  {
     "version": "0.1.3",
     "added": [
       "SwipeArr; Tv shows now display total episode and season count",
