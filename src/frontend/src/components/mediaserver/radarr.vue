@@ -122,13 +122,13 @@
     </v-row>
     <v-expand-transition>
       <v-col v-if="qualityNotCollapsed">
-        <v-select v-model="newSettings.ultra_quality_profile" :items="qualityProfiles" hint="Like a 4K profile"
+      <v-select v-model="newSettings.ultra_quality_profile" :items="mediaInfoStore.radarrInfo.quality_profiles" hint="Like a 4K profile"
                   item-title="name" item-value="id" label="Ultra quality profile"/>
-        <v-select v-model="newSettings.high_quality_profile" :items="qualityProfiles" hint="Like a 1080p profile"
+        <v-select v-model="newSettings.high_quality_profile" :items="mediaInfoStore.radarrInfo.quality_profiles" hint="Like a 1080p profile"
                   item-title="name" item-value="id" label="High quality profile"/>
-        <v-select v-model="newSettings.normal_quality_profile" :items="qualityProfiles"
+        <v-select v-model="newSettings.normal_quality_profile" :items="mediaInfoStore.radarrInfo.quality_profiles"
                   hint="Like a average profile" item-title="name" item-value="id" label="Normal quality profile"/>
-        <v-select v-model="newSettings.low_quality_profile" :items="qualityProfiles" hint="Like a microsized profile"
+        <v-select v-model="newSettings.low_quality_profile" :items="mediaInfoStore.radarrInfo.quality_profiles" hint="Like a microsized profile"
                   item-title="name" item-value="id" label="Low quality profile"/>
         <v-select v-model="newSettings.watched_quality_profile" :items="qualityOptions" item-title="name"
                   item-value="id" label="Watched quality profile"/>
@@ -149,11 +149,11 @@
         <v-switch v-model="newSettings.monitor_quality_changes" color="secondary" inset
                   label="Monitor on quality profile changed items"/>
 
-        <v-autocomplete v-model="newSettings.exclude_users_from_quality_upgrades" :items="mediaServerUsers" chips
+        <v-autocomplete v-model="newSettings.exclude_users_from_quality_upgrades" :items="mediaInfoStore.mediaInfo.users" chips
                         closable-chips
                         item-title="Name" item-value="Id" label="Excluded users from quality upgrades"
                         multiple/>
-        <v-autocomplete v-model="newSettings.exclude_tags_from_quality_upgrades" :items="tags" chips closable-chips
+        <v-autocomplete v-model="newSettings.exclude_tags_from_quality_upgrades" :items="mediaInfoStore.radarrInfo.tags" chips closable-chips
                         item-title="label" item-value="id" label="Excluded tags from quality upgrades" multiple/>
         <v-divider/>
       </v-col>
@@ -201,9 +201,9 @@
         <v-switch v-model="newSettings.mark_unpopular_as_unmonitored"
                   :disabled="newSettings.mark_unpopular_as_monitored"
                   color="secondary" inset label="Mark unpopular items as unmonitored"/>
-        <v-autocomplete v-model="newSettings.exclude_tags_from_monitoring" :items="tags" chips closable-chips
+        <v-autocomplete v-model="newSettings.exclude_tags_from_monitoring" :items="mediaInfoStore.radarrInfo.tags" chips closable-chips
                         item-title="label" item-value="id" label="Excluded tags from monitoring" multiple/>
-        <v-autocomplete v-model="newSettings.exclude_users_from_monitoring" :items="mediaServerUsers" chips
+        <v-autocomplete v-model="newSettings.exclude_users_from_monitoring" :items="mediaInfoStore.mediaInfo.users" chips
                         closable-chips
                         item-title="Name" item-value="Id" label="Excluded users from monitoring"
                         multiple/>
@@ -220,7 +220,7 @@
         </v-alert>
         <v-switch v-model="newSettings.delete_unmonitored_files" color="secondary" inset
                   label="Delete unmonitored files"/>
-        <v-autocomplete v-model="newSettings.exclude_tags_from_deletion" :items="tags" chips closable-chips
+        <v-autocomplete v-model="newSettings.exclude_tags_from_deletion" :items="mediaInfoStore.radarrInfo.tags" chips closable-chips
                         item-title="label" item-value="id" label="Excluded tags from deletion" multiple/>
         <v-divider/>
       </v-col>
@@ -270,6 +270,8 @@ import {VNumberInput} from 'vuetify/labs/VNumberInput'
 import isEqual from 'lodash/isEqual'
 import {filter_items} from "@/utils/filterParser";
 import AsyncImage from "@/components/utils/AsyncImage.vue";
+import {useMediaStore} from "@/stores/mediainfo";
+const mediaInfoStore = useMediaStore();
 
 const popularityFilters = ['Unpopular', 'Less Popular', 'Popular', 'Very Popular']
 const popularityFilter = ref(null)
@@ -280,10 +282,6 @@ const decayStartTimer = [
   {name: "Watched else Added", id: 2},
   {name: "Watched else Shortest", id: 3},
 ]
-const decayMethod = [
-  {name: "Delete & Downgrade", id: 2},
-  {name: "Downgrade", id: 3}
-]
 const qualityOptions = [
   {name: "Ultra", id: 3},
   {name: "High", id: 2},
@@ -292,7 +290,7 @@ const qualityOptions = [
 ]
 
 const getQuality = function (id) {
-  const item = qualityProfiles.value.find(entry => entry.id === id);
+  const item = mediaInfoStore.radarrInfo.quality_profiles.find(entry => entry.id === id);
   return item ? item.name : null;
 };
 
@@ -392,10 +390,6 @@ const qualityNotCollapsed = ref(true)
 const monitoredNotCollapsed = ref(true)
 const decayNotCollapsed = ref(true)
 
-const tags = ref([])
-const qualityProfiles = ref([])
-const mediaServerUsers = ref([])
-
 async function showFilterPreview(section) {
   filteredItems.value = filter_items(arrItems, newSettings.value.popular_filters[section])
   showFilteredItems.value = true
@@ -433,22 +427,6 @@ async function deleteFilter(idx, section) {
   newSettings.value.popular_filters[section].splice(idx, 1)
 }
 
-async function getServerData() {
-  fetch("/api/radarr/info")
-    .then(response => response.json())
-    .then(data => {
-      qualityProfiles.value = data.quality_profiles
-      tags.value = data.tags
-    })
-
-  fetch("/api/mediaserver/info")
-    .then(response => response.json())
-    .then(data => {
-      mediaServerUsers.value = data.users
-    })
-
-}
-
 async function getRadarrSettings() {
   fetch("/api/radarr/settings")
     .then(response => response.json())
@@ -480,15 +458,8 @@ async function postRadarrSettings() {
     console.error('Error:', error);
   }
   await getRadarrSettings()
-}
-
-
-async function getArrItems() {
-  fetch("/api/radarr/items")
-    .then(response => response.json())
-    .then(data => {
-      arrItems = data
-    })
+  await mediaInfoStore.fetchRadarrInfo(true)
+  await mediaInfoStore.fetchRadarrItems(true)
 }
 
 const settingsAreEqual = ref(true)
@@ -499,8 +470,9 @@ watch([newSettings, retrievedSettings], () => {
 
 onMounted(async () => {
   await getRadarrSettings()
-  await getServerData()
-  await getArrItems()
+  await mediaInfoStore.fetchRadarrInfo()
+  await mediaInfoStore.fetchMediaInfo()
+  await mediaInfoStore.fetchRadarrItems()
 })
 </script>
 

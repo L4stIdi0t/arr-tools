@@ -66,7 +66,6 @@
     <v-tab value="sonarr">Sonarr</v-tab>
     <v-spacer/>
     <v-btn icon="mdi-cog" @click="showSettings = true"/>
-    <v-btn class="ml-4" icon="mdi-refresh" @click="getItems"/>
   </v-tabs>
   <div class="card-container">
     <div ref="tinderCardItem" class="tinder-card" v-bind:style="{ transform: returnTransformString }">
@@ -182,6 +181,8 @@ import {VNumberInput} from 'vuetify/labs/VNumberInput'
 import interact from 'interactjs';
 import SwipeRadarr from "@/components/swipearr/swipeRadarr.vue";
 import SwipeSonarr from "@/components/swipearr/swipeSonarr.vue";
+import {useMediaStore} from "@/stores/mediainfo";
+const mediaInfoStore = useMediaStore();
 
 // region Database
 import Dexie from 'dexie';
@@ -348,24 +349,17 @@ async function submitEdit() {
 // endregion
 
 async function getItems() {
-  const fetchRadarrItems = fetch("/api/radarr/items").then(response => response.json());
-  const fetchSonarrItems = fetch("/api/sonarr/items").then(response => response.json());
-  const fetchRadarrInfo = fetch("/api/radarr/info").then(response => response.json());
-  const fetchSonarrInfo = fetch("/api/sonarr/info").then(response => response.json());
+  await mediaInfoStore.fetchSonarrItems()
+  await mediaInfoStore.fetchRadarrItems()
+  await mediaInfoStore.fetchSonarrInfo()
+  await mediaInfoStore.fetchRadarrInfo()
 
-  const [radarrItems, sonarrItems, radarrInfo, sonarrInfo] = await Promise.all([
-    fetchRadarrItems,
-    fetchSonarrItems,
-    fetchRadarrInfo,
-    fetchSonarrInfo
-  ]);
-
-  items.radarr = radarrItems;
-  items.sonarr = sonarrItems;
-  arrInfo.radarr.qualityProfiles = radarrInfo.quality_profiles;
-  arrInfo.radarr.tags = radarrInfo.tags;
-  arrInfo.sonarr.qualityProfiles = sonarrInfo.quality_profiles;
-  arrInfo.sonarr.tags = sonarrInfo.tags;
+  items.radarr = mediaInfoStore.radarrItems;
+  items.sonarr = mediaInfoStore.sonarrItems;
+  arrInfo.radarr.qualityProfiles = mediaInfoStore.radarrInfo.quality_profiles;
+  arrInfo.radarr.tags = mediaInfoStore.radarrInfo.tags;
+  arrInfo.sonarr.qualityProfiles = mediaInfoStore.sonarrInfo.quality_profiles;
+  arrInfo.sonarr.tags = mediaInfoStore.sonarrInfo.tags;
 }
 
 
@@ -503,15 +497,15 @@ async function getSeenItems() {
 
 async function getAdditionalMediaServerInfo() {
   if (!items.radarr || !items.sonarr) return;
-  fetch("/api/mediaserver/media-info").then(response => response.json()).then(data => {
-    items.radarr.forEach(item => {
-      item.favorited = !!data.movies.favorited.includes(item.id);
-      item.played = !!data.movies.played.includes(item.id);
-    });
-    items.sonarr.forEach(item => {
-      item.favorited = !!data.series.favorited.includes(item.id);
-      item.played = !!data.series.played.includes(item.id);
-    });
+  await mediaInfoStore.fetchMediaInfo();
+  const data = mediaInfoStore.mediaInfo;
+  items.radarr.forEach(item => {
+    item.favorited = !!data.movies.favorited.includes(item.id);
+    item.played = !!data.movies.played.includes(item.id);
+  });
+  items.sonarr.forEach(item => {
+    item.favorited = !!data.series.favorited.includes(item.id);
+    item.played = !!data.series.played.includes(item.id);
   });
 }
 
