@@ -6,7 +6,10 @@
     ],
     "removed": [],
     "changed": [
-      "Repo transferred to a different user"
+      "Repo transferred to a different user",
+      "Fixed; Favicon not showing",
+      "Fixed; Config file not saving correctly",
+      "Using a store for the webui"
     ]
   },
   {
