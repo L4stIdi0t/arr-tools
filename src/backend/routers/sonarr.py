@@ -17,6 +17,7 @@ config = config_manager.get_config()
 sonarr = SonarrAPI(config.SONARR.base_url, config.SONARR.api_key)
 logging_manager = LoggingManager()
 
+
 # endregion
 
 

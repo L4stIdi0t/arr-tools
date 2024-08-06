@@ -17,6 +17,7 @@ config = config_manager.get_config()
 radarr = RadarrAPI(config.RADARR.base_url, config.RADARR.api_key)
 logging_manager = LoggingManager()
 
+
 # endregion
 
 

@@ -9,6 +9,7 @@ from utils.log_manager import LoggingManager
 
 logging_manager = LoggingManager()
 
+
 class ConfigManager:
     def __init__(self, config_file_path: str = './data/config.json'):
         self.config_file_path = Path(config_file_path)
@@ -44,12 +45,14 @@ class ConfigManager:
             self.write_default_configs()
 
     def save_config_file(self, config_data: settings.Config):
+        self.config_file_data = config_data
         logging_manager.log('Saving config file', level=logging.DEBUG)
         logging_manager.log(config_data.model_dump_json(indent=4), level=logging.DEBUG)
         with open(self.config_file_path, 'w') as f:
             json.dump(config_data.model_dump(), f, indent=4)
 
     def get_config(self) -> settings.Config:
+        self.load_config_file()
         return self.config_file_data
 
 
