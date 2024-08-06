@@ -35,7 +35,7 @@ Use the community app store
 
 Docker:
 ```sh
-docker run --name arr-tools -p 9000:9000 -v $(pwd)/data:/app/backend/data ghcr.io/mah-thingies/arr-tools:latest
+docker run --name arr-tools -p 9000:9000 -v $(pwd)/data:/app/backend/data ghcr.io/l4stidi0t/arr-tools/main:latest
 ```
 
 Docker compose:
@@ -44,7 +44,7 @@ version: '3.8'
 
 services:
   arr-tools:
-    image: ghcr.io/mah-thingies/arr-tools:latest
+    image: ghcr.io/l4stidi0t/arr-tools/main:latest
     container_name: arr-tools
     ports:
       - "9000:9000"
