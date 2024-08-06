@@ -132,6 +132,12 @@ class RadarrSettings(BaseModel):
     popular_filters: dict = {"very_popular": [], "popular": [], "less_popular": [], "unpopular": []}
 
 
+class SpotifySettings(BaseModel):
+    client_id: str = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    client_secret: str = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    playlists: list = []
+
+
 class MediaServerSettings(BaseModel):
     media_server_type: str = "emby"
     media_server_base_url: str = "http://media_server:8096/"
@@ -141,11 +147,12 @@ class MediaServerSettings(BaseModel):
 
 class MiscSettings(BaseModel):
     log_level: str = "INFO"
-    config_version: str = "0.1.0"
+    config_version: str = "0.1.1"
 
 
 class Config(BaseModel):
     SONARR: SonarrSettings
     RADARR: RadarrSettings
+    SPOTIFY: SpotifySettings
     MEDIASERVER: MediaServerSettings
     MISC: MiscSettings
