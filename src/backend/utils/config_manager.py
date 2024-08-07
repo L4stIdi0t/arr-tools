@@ -40,7 +40,6 @@ class ConfigManager:
         default_config = settings.Config(
             SONARR=settings.SonarrSettings(),
             RADARR=settings.RadarrSettings(),
-            LIDARR=settings.LidarrSettings(),
             SPOTIFY=settings.SpotifySettings(),
             MEDIASERVER=settings.MediaServerSettings(),
             MISC=settings.MiscSettings(config_version=CONFIG_VERSION)
