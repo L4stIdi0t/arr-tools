@@ -7,6 +7,11 @@ from utils.log_manager import LoggingManager
 from utils.media_server_interaction import MediaServerinteracter
 from utils.validators import fuzzy_str_match
 
+# TODO:
+# - Add support for video playlists
+# - Add write overview to playlist and make it locked with info about playlist and that it is a managed playlist
+
+
 # region Configuration and Setup
 config_manager = ConfigManager()
 config = config_manager.get_config()
@@ -37,7 +42,7 @@ def get_playlist_tracks(playlist_id):
     return playlist_tracks
 
 
-def process_playlist_tracks(playlist_tracks, media_server_tracks_by_title, media_server_tracks_by_album):
+def process_playlist_tracks(playlist_tracks, media_server_tracks_by_title):
     matched_tracks = set()
 
     for playlist_track in playlist_tracks:
@@ -66,11 +71,34 @@ def process_playlist_tracks(playlist_tracks, media_server_tracks_by_title, media
     return matched_tracks
 
 
+def process_playlist_audio(existing_server_playlists, media_server_tracks_by_title, playlist):
+    playlist_tracks = get_playlist_tracks(playlist['id'])
+    track_ids = process_playlist_tracks(playlist_tracks, media_server_tracks_by_title)
+
+    existing_playlist = None
+    playlist_name = f"{playlist['name']} - arrTools"
+    for playlist in existing_server_playlists:
+        if playlist['title'] == playlist_name:
+            existing_playlist = playlist
+            break
+
+    if existing_playlist:
+        print(f"Found existing playlist {playlist_name}")
+        playlist_id = existing_playlist['id']
+        existing_entries = media_server.get_items_from_playlist(playlist_id)
+        existing_entries_ids = [entry['PlaylistItemId'] for entry in existing_entries]
+        if len(existing_entries_ids) > 0:
+            media_server.remove_items_from_playlist(playlist_id, existing_entries_ids)
+        media_server.add_items_to_playlist(playlist_id, track_ids)
+    else:
+        print(f"Creating new playlist {playlist_name}")
+        media_server.create_playlist(playlist_name, track_ids, 'Audio')
+
+
 def main():
     media_server_tracks = media_server.get_music_items()
     # Index media_server_tracks by track title and album for quicker lookup
     media_server_tracks_by_title = {}
-    media_server_tracks_by_album = {}
 
     for track in media_server_tracks:
         title = track['title']
@@ -81,27 +109,10 @@ def main():
     existing_server_playlists = media_server.get_playlist_items()
 
     for playlist in config.SPOTIFY.playlists:
-        playlist_tracks = get_playlist_tracks(playlist['id'])
-        track_ids = process_playlist_tracks(playlist_tracks, media_server_tracks_by_title, media_server_tracks_by_album)
-
-        existing_playlist = None
-        playlist_name = f"{playlist['name']} - arrTools"
-        for playlist in existing_server_playlists:
-            if playlist['title'] == playlist_name:
-                existing_playlist = playlist
-                break
-
-        if existing_playlist:
-            print(f"Found existing playlist {playlist_name}")
-            playlist_id = existing_playlist['id']
-            existing_entries = media_server.get_items_from_playlist(playlist_id)
-            existing_entries_ids = [entry['PlaylistItemId'] for entry in existing_entries]
-            if len(existing_entries_ids) > 0:
-                media_server.remove_items_from_playlist(playlist_id, existing_entries_ids)
-            media_server.add_items_to_playlist(playlist_id, track_ids)
-        else:
-            print(f"Creating new playlist {playlist_name}")
-            media_server.create_playlist(playlist_name, track_ids, 'Audio')
+        if playlist['type'] == 'audio':
+            process_playlist_audio(existing_server_playlists, media_server_tracks_by_title, playlist)
+        elif playlist['type'] == 'video':
+            raise NotImplementedError("Video playlists are not yet supported")
 
 
 def run():
