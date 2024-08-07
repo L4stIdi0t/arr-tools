@@ -8,7 +8,6 @@ from utils.media_server_interaction import MediaServerinteracter
 from utils.validators import fuzzy_str_match
 
 # region Configuration and Setup
-router = APIRouter(prefix="/spotify", tags=["Spotify"])
 config_manager = ConfigManager()
 config = config_manager.get_config()
 logging_manager = LoggingManager()
