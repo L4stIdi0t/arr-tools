@@ -1,6 +1,6 @@
 [
   {
-    "version": "0.2.4",
+    "version": "0.2.0",
     "added": [
       "Spotify to Mediaserver; A new worker that converts your playlists to audio and video playlists",
       "Playlist to Music Video; A new worker that converts your playlists to music videos",

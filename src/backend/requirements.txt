@@ -14,3 +14,4 @@ starlette~=0.37.2
 mutagen~=1.47.0
 shazamio~=0.6.0
 pydub~=0.25.1
+yt-dlp~=2024.8.6
