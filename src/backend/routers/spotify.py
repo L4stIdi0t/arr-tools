@@ -2,7 +2,7 @@ import logging
 import re
 
 import spotipy
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from fastapi import HTTPException
 from spotipy.oauth2 import SpotifyClientCredentials
 
@@ -52,7 +52,22 @@ def get_playlist_id(playlist_url_id: str):
 
 
 @router.put("/playlist", description="Add a playlist for conversion")
-def put_playlist(playlist_url_id: str):
+def put_playlist(
+        playlist_url_id: str = Query(..., description="Spotify playlist URL or ID"),
+        playlist_type: str = Query(..., description="Type of playlist: audio, video, or both")
+):
+    """
+    Add a playlist for conversion.
+
+    Args:
+        playlist_url_id (str): Spotify playlist URL or ID.
+        playlist_type (str): Type of playlist. Can be 'audio', 'video', or 'both'.
+
+    Raises:
+        HTTPException: If the playlist already exists or if there are issues with the
+                       client ID/secret or finding the playlist.
+    """
+
     config = config_manager.get_config()
 
     playlist_id = get_playlist_id(playlist_url_id)
@@ -76,6 +91,7 @@ def put_playlist(playlist_url_id: str):
 
     config.SPOTIFY.playlists.append({
         "id": playlist_id,
+        "type": playlist_type,
         "name": playlist_name
     })
     config_manager.save_config_file(config)

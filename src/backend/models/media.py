@@ -100,3 +100,16 @@ class PlayedEpisodes(Base):
 
     userIds = Column(JSONEncodedDict)
     date = Column(Integer, nullable=False)
+
+
+class musicVideoCache(Base):
+    __tablename__ = 'musicVideoCache'
+
+    id = Column(Integer, primary_key=True)
+    youtubeId = Column(String)
+    downloadError = Column(Integer, default=0)
+    title = Column(String, nullable=False)
+    artists = Column(JSONEncodedDict, nullable=False)
+    album = Column(String)
+    dateAdded = Column(Integer, nullable=False)
+    additionalInfo = Column(JSONEncodedDict)

@@ -87,6 +87,15 @@ def post_settings(settings: settings.MediaServerSettings):
     config.MEDIASERVER = settings
     config_manager.save_config_file(config)
 
+
+@router.get("/playlists", description="Get all playlists from the media server")
+def get_playlists():
+    config = config_manager.get_config()
+    media_server = MediaServerinteracter(config.MEDIASERVER.media_server_type, config.MEDIASERVER.media_server_base_url,
+                                         config.MEDIASERVER.media_server_api_key)
+
+    return media_server.get_playlist_items()
+
 # @router.get("/dry", description="Get the results of a dry run")
 # def get_dry_run() -> JSONResponse:
 #     return JSONResponse(radarr_run(dry=True))

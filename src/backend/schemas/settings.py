@@ -138,6 +138,24 @@ class SpotifySettings(BaseModel):
     playlists: list = []
 
 
+class MusicVideoSettings(BaseModel):
+    enabled: bool = True
+    use_imvdb: bool = True
+    use_shazam_search: bool = True
+    use_youtube_search: bool = False
+    good_keywords: list = ["official", "official video", "music video", "vevo", "uncensured", "uncensored"]
+    bad_keywords: list = ["acoustic", "lyrics", "remix"]
+    exclude_words: list = [
+        "tutorial",
+        "cover",
+        "lesson",
+        "karaoke",
+        "lessons",
+    ]
+    check_song_with_recognition: bool = True
+    convert_playlists: list = []
+
+
 class MediaServerSettings(BaseModel):
     media_server_type: str = "emby"
     media_server_base_url: str = "http://media_server:8096/"
@@ -154,5 +172,6 @@ class Config(BaseModel):
     SONARR: SonarrSettings
     RADARR: RadarrSettings
     SPOTIFY: SpotifySettings
+    MUSICVIDEO: MusicVideoSettings
     MEDIASERVER: MediaServerSettings
     MISC: MiscSettings

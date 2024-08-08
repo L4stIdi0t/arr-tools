@@ -37,6 +37,9 @@ def fuzzy_str_match(query, target, max_changes_per_word=1, normalize_words=True)
         query = normalize_string(query, remove_case=True)
         target = normalize_string(target, remove_case=True)
 
+    if query == target:
+        return True
+
     query_words = query.split()
     target_words = target.split()
 

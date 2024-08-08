@@ -20,3 +20,10 @@ workers:
       interval: 180
     max_runtime: null
     max_instances: 1
+  workers.playlist_to_music_video:
+    enabled: true
+    schedule:
+      type: interval
+      interval: 180
+    max_runtime: null
+    max_instances: 1

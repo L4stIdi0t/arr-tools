@@ -98,22 +98,18 @@ class EmbyAPI:
         url = self._url_builder("/Library/VirtualFolders/Query")
         return self._get_request(url)["Items"]
 
-
     def post_new_playlist(self, name, entry_ids, media_type):
         string_ids = ','.join(map(str, entry_ids))
         url = self._url_builder("/Playlists", name=name, ids=string_ids, media_type=media_type)
         return self._get_request(url, "POST")
 
-
     def get_playlist_items(self, id):
         url = self._url_builder(f"/Playlists/{id}/Items")
         return self._get_request(url)["Items"]
 
-
     def remove_items_from_playlist(self, id, entry_ids):
         url = self._url_builder(f"/Playlists/{id}/Items", EntryIds=','.join(map(str, entry_ids)))
         return self._get_request(url, "DELETE")
-
 
     def add_items_to_playlist(self, id, entry_ids):
         url = self._url_builder(f"/Playlists/{id}/Items", ids=','.join(map(str, entry_ids)))
