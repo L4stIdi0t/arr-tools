@@ -15,3 +15,4 @@ mutagen~=1.47.0
 shazamio~=0.6.0
 pydub~=0.25.1
 yt-dlp~=2024.8.6
+random-user-agent~=1.0.1
