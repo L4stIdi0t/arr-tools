@@ -14,6 +14,7 @@ from utils.log_manager import LoggingManager
 from utils.music_video.imvdb_api import imvdb_search
 from utils.music_video.shazam_api import shazam_cdn_search
 from utils.music_video.shazam_api import shazam_confirm_song
+from utils.parsers import make_filename_safe
 
 # region Configuration and Setup
 config_manager = ConfigManager()
@@ -63,16 +64,18 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
         return False
 
     # Download thumbnail from i.ytimg.com
-    os.makedirs(f"./musicVideoOutput/{artists[0]}", exist_ok=True)
+    artist_safe = make_filename_safe(artists[0])
+    title_safe = make_filename_safe(title)
+    os.makedirs(f"./musicVideoOutput/{artist_safe}", exist_ok=True)
     thumbnail_url = f"https://i.ytimg.com/vi/{youtube_id}/maxresdefault.jpg"
-    thumbnail_path = f"./musicVideoOutput/{artists[0]}/{title}.jpg"
+    thumbnail_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.jpg"
     response = requests.get(thumbnail_url)
     if response.status_code == 200:
         with open(thumbnail_path, "wb") as thumbnail_file:
             thumbnail_file.write(response.content)
 
-    os.makedirs(f"./musicVideoOutput/{artists[0]}", exist_ok=True)
-    shutil.move(f"./temp/downloading/{youtube_id}.mp4", f"./musicVideoOutput/{artists[0]}/{title}.mp4")
+    os.makedirs(f"./musicVideoOutput/{artist_safe}", exist_ok=True)
+    shutil.move(f"./temp/downloading/{youtube_id}.mp4", f"./musicVideoOutput/{artist_safe}/{title_safe}.mp4")
     return True
 
 
@@ -82,7 +85,7 @@ def download_music_video(title: str, artists: list, album: str = None):
     if not mv_config.enabled:
         return False
 
-    if os.path.exists(f"./musicVideoOutput/{artists[0]}/{title}.jpg"):
+    if os.path.exists(f"./musicVideoOutput/{make_filename_safe(artists[0])}/{make_filename_safe(title)}.jpg"):
         return True
 
     existing_data = _check_cache(title, artists, album)
