@@ -151,6 +151,8 @@ class MusicVideoSettings(BaseModel):
         "lesson",
         "karaoke",
         "lessons",
+        "live",
+        "audio"
     ]
     check_song_with_recognition: bool = True
     convert_playlists: list = []
