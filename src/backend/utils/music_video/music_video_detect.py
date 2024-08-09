@@ -75,5 +75,5 @@ def detect_movement(video_path, skip_frames, check_duration, threshold=25):
         return False
 
     scene_list = find_scenes(video_path)
-    min_scene_changes = total_frames / fps / 30
+    min_scene_changes = total_frames / fps / 26
     return len(scene_list) > min_scene_changes
