@@ -152,8 +152,7 @@ def _monitor_episodes_behind(episodes, season_number, episode_number, ahead_coun
 
         if count <= ahead_count and count != 0:
             count += 1
-            if (season_number == 0 and episode['seasonNumber'] == 0) or (
-                    season_number != 0 and episode['seasonNumber'] != 0):
+            if (season_number == 0) or (season_number >= 1 and episode['seasonNumber'] >= 1):
                 episode_ids.append({
                     'episode_id': episode['id'],
                     'series_id': series['id'],
@@ -213,7 +212,7 @@ def get_monitorable_items():
     reassign_based_on_age(unpopular_items, config.SONARR.unpopular_decay_days, config.SONARR.decay_start_timer,
                           played_series, unpopular_items, unmonitor)
 
-    monitor = favorited_items + very_popular_items + popular_items + less_popular_items
+    monitor = favorited_items + very_popular_items + popular_items + less_popular_items + played_series
     if config.SONARR.mark_unpopular_as_monitored:
         monitor += unpopular_items
     if config.SONARR.mark_unpopular_as_unmonitored:
