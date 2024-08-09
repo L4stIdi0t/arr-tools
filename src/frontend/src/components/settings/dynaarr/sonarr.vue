@@ -93,10 +93,7 @@
   </v-dialog>
 
   <v-card>
-    <v-card-title>Connection</v-card-title>
     <v-col>
-      <v-text-field v-model="newSettings.base_url" label="Server address" placeholder="http://127.0.0.1:7878/"/>
-      <v-text-field v-model="newSettings.api_key" label="API key" placeholder="XXXXXXXXXXXXXX"/>
       <v-switch v-model="newSettings.enabled" color="secondary" inset
                 label="If Sonarr should be used for auto management"/>
       <v-alert v-if="!newSettings.enabled" density="compact" type="warning">
