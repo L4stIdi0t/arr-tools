@@ -12,6 +12,8 @@ from utils.general_arr_actions import reassign_based_on_age, link_arr_to_media_s
 from utils.media_server_interaction import MediaServerinteracter
 from utils.process_filter import filter_items
 
+# TODO: Optimize media server api calls, cache results...
+
 config = ConfigManager().get_config()
 
 media_server = MediaServerinteracter(config.MEDIASERVER.media_server_type, config.MEDIASERVER.media_server_base_url,
@@ -36,6 +38,10 @@ def get_quality_changes():
     if config.SONARR.use_watched:
         watched_items = \
             media_server.get_played(ignore_user_ids=config.SONARR.exclude_users_from_quality_upgrades)["Series"]
+        played_items = media_server.get_played(ignore_user_ids=config.SONARR.exclude_users_from_monitoring)
+        watched_items = played_items["Series"] + played_items["Episodes"] + watched_items
+        temp = {item['Name'] for item in watched_items}
+        watched_items = [{'Name': item} for item in temp]
 
     # Convert media server format to arr format
     watched_items = [
@@ -182,7 +188,9 @@ def get_monitorable_items():
         favorited_items = \
             media_server.get_all_favorites(ignore_user_ids=config.SONARR.exclude_users_from_monitoring)["Series"]
     played_items = media_server.get_played(ignore_user_ids=config.SONARR.exclude_users_from_monitoring)
-    played_series = played_items["Series"]
+    played_series = played_items["Series"] + played_items["Episodes"]
+    temp = {item['Name'] for item in played_series}
+    played_series = [{'Name': item} for item in temp]
 
     favorited_items = [
         arr_item for item in favorited_items
@@ -212,7 +220,8 @@ def get_monitorable_items():
     reassign_based_on_age(unpopular_items, config.SONARR.unpopular_decay_days, config.SONARR.decay_start_timer,
                           played_series, unpopular_items, unmonitor)
 
-    monitor = favorited_items + very_popular_items + popular_items + less_popular_items + played_series
+    monitor = favorited_items + played_series + very_popular_items + popular_items + less_popular_items
+
     if config.SONARR.mark_unpopular_as_monitored:
         monitor += unpopular_items
     if config.SONARR.mark_unpopular_as_unmonitored:
