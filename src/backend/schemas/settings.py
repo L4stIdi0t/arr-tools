@@ -132,6 +132,33 @@ class RadarrSettings(BaseModel):
     popular_filters: dict = {"very_popular": [], "popular": [], "less_popular": [], "unpopular": []}
 
 
+class SpotifySettings(BaseModel):
+    client_id: str = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    client_secret: str = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    playlists: list = []
+
+
+class MusicVideoSettings(BaseModel):
+    enabled: bool = True
+    use_imvdb: bool = True
+    use_shazam_search: bool = True
+    use_youtube_search: bool = False
+    good_keywords: list = ["official", "official video", "music video", "vevo", "uncensured", "uncensored"]
+    bad_keywords: list = ["acoustic", "lyrics", "remix"]
+    exclude_words: list = [
+        "tutorial",
+        "cover",
+        "lesson",
+        "karaoke",
+        "lessons",
+        "live",
+        "audio"
+    ]
+    check_song_with_recognition: bool = True
+    check_song_for_movement: bool = True
+    convert_playlists: list = []
+
+
 class MediaServerSettings(BaseModel):
     media_server_type: str = "emby"
     media_server_base_url: str = "http://media_server:8096/"
@@ -141,11 +168,13 @@ class MediaServerSettings(BaseModel):
 
 class MiscSettings(BaseModel):
     log_level: str = "INFO"
-    config_version: str = "0.1.0"
+    config_version: str = "0.1.1"
 
 
 class Config(BaseModel):
     SONARR: SonarrSettings
     RADARR: RadarrSettings
+    SPOTIFY: SpotifySettings
+    MUSICVIDEO: MusicVideoSettings
     MEDIASERVER: MediaServerSettings
     MISC: MiscSettings

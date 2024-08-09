@@ -21,6 +21,9 @@ WORKDIR /app/backend
 
 COPY /src/backend/requirements.txt .
 
+RUN apt-get update && \
+    apt-get install -y ffmpeg
+
 RUN pip install -r requirements.txt
 
 COPY /src/backend/ .

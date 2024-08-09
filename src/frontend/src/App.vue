@@ -4,7 +4,7 @@
       <v-col>
         <v-tabs v-model="currentPage" align-tabs="center">
           <v-tab :value="'home'" @click="navigateToRoute('/')">Home</v-tab>
-          <v-tab :value="'dynaarr'" @click="navigateToRoute('/dynaarr')">DynaArr</v-tab>
+          <v-tab :value="'settings'" @click="navigateToRoute('/settings')">Settings</v-tab>
           <v-tab :value="'swipearr'" @click="navigateToRoute('/swipearr')">SwipeArr</v-tab>
           <v-tab :value="'tools'" @click="navigateToRoute('/tools')">Tools</v-tab>
         </v-tabs>

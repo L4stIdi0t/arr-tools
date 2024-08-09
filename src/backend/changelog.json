@@ -1,5 +1,17 @@
 [
   {
+    "version": "0.2.0",
+    "added": [
+      "Spotify to Mediaserver; A new worker that converts your playlists to audio and video playlists",
+      "Playlist to Music Video; A new worker that converts your playlists to music videos",
+      "Music Video; A new system which can download music videos from Youtube (check legal issues)"
+    ],
+    "removed": [],
+    "changed": [
+      "DynaArr; Moved the settings page to settings"
+    ]
+  },
+  {
     "version": "0.1.4",
     "added": [
       "Debug logs, creating a file named DEBUG in the /data directory will enable debug logging"

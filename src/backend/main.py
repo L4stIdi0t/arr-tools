@@ -7,8 +7,10 @@ from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 
 from routers import mediaserver
+from routers import music_videos
 from routers import radarr
 from routers import sonarr
+from routers import spotify
 from routers import system
 from utils.log_manager import LoggingManager
 from workers.workers import WorkerManager
@@ -20,6 +22,8 @@ app = FastAPI()
 
 app.include_router(radarr.router, prefix="/api")
 app.include_router(sonarr.router, prefix="/api")
+app.include_router(spotify.router, prefix="/api")
+app.include_router(music_videos.router, prefix="/api")
 app.include_router(mediaserver.router, prefix="/api")
 app.include_router(system.router, prefix="/api")
 

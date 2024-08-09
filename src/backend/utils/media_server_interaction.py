@@ -344,3 +344,121 @@ class MediaServerinteracter:
                         self.client.unmark_item_as_favorite(user_id, favorite["Id"])
         else:
             raise Exception("Media server type not supported " + self.media_server_type)
+
+    def get_music_items(self):
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
+            libraries = self.client.get_media_libraries()
+            music_libraries_ids = [
+                d['Id'] for d in libraries if d["CollectionType"] == "music"
+            ]
+
+            music_items = []
+
+            for music_library_id in music_libraries_ids:
+                music_items.extend(self.client.get_items(IncludeItemTypes="Audio", ParentId=music_library_id))
+
+            unique_ids = set()
+            new_music_items = []
+            for item in music_items:
+                item_id = item['Id']
+                if item_id in unique_ids:
+                    continue
+                unique_ids.add(item_id)
+                new_item = {
+                    'title': item['Name'],
+                    'id': item_id,
+                    'artists': item['Artists'],
+                    'album': item['Album'],
+                }
+                new_music_items.append(new_item)
+
+            return new_music_items
+        else:
+            raise Exception("Media server type not supported " + self.media_server_type)
+
+    def get_music_video_items(self):
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
+            libraries = self.client.get_media_libraries()
+            music_video_library_ids = [
+                d['Id'] for d in libraries if d["CollectionType"] == "musicvideos"
+            ]
+
+            music_video_items = []
+
+            for music_library_id in music_video_library_ids:
+                music_video_items.extend(self.client.get_items(IncludeItemTypes="Audio", ParentId=music_library_id))
+
+            unique_ids = set()
+            new_music_video_items = []
+            for item in music_video_items:
+                item_id = item['Id']
+                if item_id in unique_ids:
+                    continue
+                unique_ids.add(item_id)
+                new_item = {
+                    'title': item['Name'],
+                    'id': item_id,
+                    'artists': item['Artists'],
+                    'album': item['Album'],
+                }
+                new_music_video_items.append(new_item)
+
+            return new_music_video_items
+        else:
+            raise Exception("Media server type not supported " + self.media_server_type)
+
+    def get_playlist_items(self):
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
+            libraries = self.client.get_media_libraries()
+            playlist_library_ids = [
+                d['Id'] for d in libraries if d["CollectionType"] == "playlists"
+            ]
+
+            playlist_items = []
+
+            for user in self.client_users:
+                user_id = user["Id"]
+                for playlist_library_id in playlist_library_ids:
+                    playlist_items.extend(
+                        self.client.get_items(user_id=user_id, IncludeItemTypes="Audio", ParentId=playlist_library_id))
+
+            unique_ids = set()
+            new_playlist_items = []
+            for item in playlist_items:
+                item_id = item['Id']
+                if item_id in unique_ids:
+                    continue
+                unique_ids.add(item_id)
+                new_item = {
+                    'title': item['Name'],
+                    'id': item_id,
+                }
+                new_playlist_items.append(new_item)
+
+            return new_playlist_items
+        else:
+            raise Exception("Media server type not supported " + self.media_server_type)
+
+    def create_playlist(self, name, ids, media_type):
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
+            return self.client.post_new_playlist(name, ids, media_type)
+        else:
+            raise Exception("Media server type not supported " + self.media_server_type)
+
+    def get_items_from_playlist(self, id):
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
+            return self.client.get_playlist_items(id)
+        else:
+            raise Exception("Media server type not supported " + self.media_server_type)
+
+    def remove_items_from_playlist(self, id, entry_ids):
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
+            return self.client.remove_items_from_playlist(id, entry_ids)
+        else:
+            raise Exception("Media server type not supported " + self.media_server_type)
+
+    def add_items_to_playlist(self, id, entry_ids):
+        if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
+            return self.client.add_items_to_playlist(id, entry_ids)
+        else:
+            raise Exception("Media server type not supported " + self.media_server_type)
