@@ -7,7 +7,9 @@
       "Music Video; A new system which can download music videos from Youtube (check legal issues)"
     ],
     "removed": [],
-    "changed": []
+    "changed": [
+      "DynaArr; Moved the settings page to settings"
+    ]
   },
   {
     "version": "0.1.4",
