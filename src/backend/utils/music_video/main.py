@@ -15,6 +15,7 @@ from utils.music_video.imvdb_api import imvdb_search
 from utils.music_video.shazam_api import shazam_cdn_search
 from utils.music_video.shazam_api import shazam_confirm_song
 from utils.parsers import make_filename_safe
+from utils.music_video.music_video_detect import detect_movement
 
 # region Configuration and Setup
 config_manager = ConfigManager()
@@ -61,6 +62,13 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
         correct_song = shazam_confirm_song(f"./temp/downloading/{youtube_id}.mp4", title, artists, album)
 
     if not correct_song:
+        return False
+
+    is_music_video = True
+    if config.MUSICVIDEO.check_song_for_movement:
+        is_music_video = detect_movement(f"./temp/downloading/{youtube_id}.mp4", 5, 10)
+
+    if not is_music_video:
         return False
 
     # Download thumbnail from i.ytimg.com

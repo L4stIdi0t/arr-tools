@@ -155,6 +155,7 @@ class MusicVideoSettings(BaseModel):
         "audio"
     ]
     check_song_with_recognition: bool = True
+    check_song_for_movement: bool = True
     convert_playlists: list = []
 
 
