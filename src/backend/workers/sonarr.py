@@ -430,7 +430,6 @@ def change_monitoring(monitoring_changes: list, monitor: bool):
     allowed_changes = set()
     exclude_tags_set = set(config.SONARR.exclude_tags_from_monitoring)
     for item in monitoring_changes:
-        print(item)
         tags_set = set(item['tags'])
         if bool(tags_set & exclude_tags_set):
             continue
