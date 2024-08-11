@@ -6,7 +6,7 @@ def find_scenes(video_path):
     video = open_video(video_path)
     scene_manager = SceneManager()
     scene_manager.add_detector(
-        ContentDetector(threshold=45))
+        ContentDetector(threshold=40))
     scene_manager.detect_scenes(video)
     return scene_manager.get_scene_list()
 
@@ -75,5 +75,5 @@ def detect_movement(video_path, skip_frames, check_duration, threshold=25):
         return False
 
     scene_list = find_scenes(video_path)
-    min_scene_changes = total_frames / fps / 26
+    min_scene_changes = total_frames / fps / 35
     return len(scene_list) > min_scene_changes

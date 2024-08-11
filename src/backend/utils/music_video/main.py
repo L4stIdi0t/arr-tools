@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import shutil
@@ -49,6 +50,12 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
         # "format": "bv+ba/b",
         "outtmpl": f"./temp/downloading/{youtube_id}.%(ext)s",
         "no_warnings": True,
+        "write-thumbnail": True,
+        "subtitlesformat": "srt",
+        "subtitleslangs": config.MUSICVIDEO.subtitle_languages,
+        "writesubtitles": config.MUSICVIDEO.download_subtitles,
+        "writeautomaticsub": config.MUSICVIDEO.download_subtitles,
+        "sponsorblock-mark": True,
         'postprocessors': [{
             'key': 'FFmpegVideoConvertor',
             'preferedformat': 'mp4',
@@ -71,19 +78,55 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
     if not is_music_video:
         return False
 
-    # Download thumbnail from i.ytimg.com
     artist_safe = make_filename_safe(artists[0])
     title_safe = make_filename_safe(title)
     os.makedirs(f"./musicVideoOutput/{artist_safe}", exist_ok=True)
-    thumbnail_url = f"https://i.ytimg.com/vi/{youtube_id}/maxresdefault.jpg"
-    thumbnail_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.jpg"
-    response = requests.get(thumbnail_url)
-    if response.status_code == 200:
-        with open(thumbnail_path, "wb") as thumbnail_file:
-            thumbnail_file.write(response.content)
-
-    os.makedirs(f"./musicVideoOutput/{artist_safe}", exist_ok=True)
     shutil.move(f"./temp/downloading/{youtube_id}.mp4", f"./musicVideoOutput/{artist_safe}/{title_safe}.mp4")
+
+    # region Download thumbnail from i.ytimg.com
+    os.makedirs(f"./musicVideoOutput/{artist_safe}", exist_ok=True)
+    thumbnail_urls = [
+        f"https://i.ytimg.com/vi/{youtube_id}/maxresdefault.jpg",
+        f"https://i.ytimg.com/vi/{youtube_id}/hqdefault.jpg"
+        ]
+    thumbnail_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.jpg"
+    for url in thumbnail_urls:
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(thumbnail_path, "wb") as thumbnail_file:
+                thumbnail_file.write(response.content)
+            break
+    # endregion
+
+    # region Move subtitles
+    subtitle_formats = ["srt", "vtt", "ass", "ssa", "sub", "idx"]
+    for fmt in subtitle_formats:
+        srt_files = glob.glob(f"./temp/downloading/{youtube_id}*.{fmt}")
+        for srt_file in srt_files:
+            language_code = srt_file.split(f"{youtube_id}.")[-1]
+            new_srt_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.{language_code}"
+            os.rename(srt_file, new_srt_path)
+    # endregion
+
+    # region Create NFO file
+    nfo_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.nfo"
+    nfo_content = f"""
+        <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+        <musicvideo>
+            <title>{title}</title>
+            <artist>{artists[0]}</artist>
+            <userrating/>
+            <track/>
+            <studio/>
+            <premiered/>
+            <year />
+            <thumb>{title_safe}.jpg</thumb>
+            <source>YouTube</source>
+        </musicvideo>
+    """
+    with open(nfo_path, "w") as nfo_file:
+        nfo_file.write(nfo_content)
+    # endregion
     return True
 
 

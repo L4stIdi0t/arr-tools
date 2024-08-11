@@ -157,6 +157,8 @@ class MusicVideoSettings(BaseModel):
     check_song_with_recognition: bool = True
     check_song_for_movement: bool = True
     convert_playlists: list = []
+    download_subtitles: bool = True
+    subtitle_languages: list = ["en"]
 
 
 class MediaServerSettings(BaseModel):
@@ -168,7 +170,7 @@ class MediaServerSettings(BaseModel):
 
 class MiscSettings(BaseModel):
     log_level: str = "INFO"
-    config_version: str = "0.1.1"
+    config_version: str = "0.1.2"
 
 
 class Config(BaseModel):
