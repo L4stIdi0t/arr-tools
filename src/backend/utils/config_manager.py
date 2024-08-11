@@ -21,6 +21,7 @@ def upgrade_v0_1_1_to_v0_1_2(config_data):
     config_data["MISC"]["config_version"] = "0.1.2"
     return config_data
 
+
 def upgrade_v0_1_0_to_v0_1_1(config_data):
     # Define changes needed to upgrade from v0.1.0 to v0.1.1
     config_data["SPOTIFY"] = settings.SpotifySettings().dict()
