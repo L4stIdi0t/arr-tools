@@ -105,7 +105,7 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
         for srt_file in srt_files:
             language_code = srt_file.split(f"{youtube_id}.")[-1]
             new_srt_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.{language_code}"
-            os.rename(srt_file, new_srt_path)
+            shutil.move(srt_file, new_srt_path)
     # endregion
 
     # region Create NFO file
