@@ -18,7 +18,7 @@ config = ConfigManager().get_config()
 
 media_server = MediaServerinteracter(config.MEDIASERVER.media_server_type, config.MEDIASERVER.media_server_base_url,
                                      config.MEDIASERVER.media_server_api_key)
-sonarr = customSonarAPI(config.SONARR.base_url, config.SONARR.api_key)
+sonarr = None
 arr_items = []
 now_time = datetime.datetime.now(datetime.timezone.utc)
 
@@ -158,7 +158,7 @@ def _monitor_episodes_behind(episodes, season_number, episode_number, ahead_coun
 
         if count <= ahead_count and count != 0:
             count += 1
-            if (season_number == 0) or (season_number >= 1 and episode['seasonNumber'] >= 1):
+            if (season_number >= 1 and episode['seasonNumber'] >= 1):
                 episode_ids.append({
                     'episode_id': episode['id'],
                     'series_id': series['id'],
@@ -546,7 +546,9 @@ def main_run(dry: bool = False):
 
 
 def run(dry: bool = False):
+    global sonarr
     try:
+        sonarr = customSonarAPI(config.SONARR.base_url, config.SONARR.api_key)
         return main_run(dry)
     except Exception as error_message:
         pattern_length_difference = r"pyarr\.exceptions\.PyarrServerError: Internal Server Error: Expected query to return (\d+) rows but returned (\d+)"
