@@ -159,6 +159,7 @@ class MusicVideoSettings(BaseModel):
     convert_playlists: list = []
     download_subtitles: bool = True
     subtitle_languages: list = ["en"]
+    lastfm_api_key: str = "2dc3914abf35f0d9c92d97d8f8e42b43"  # Do not forget to change this, it is from beets...
 
 
 class MediaServerSettings(BaseModel):
