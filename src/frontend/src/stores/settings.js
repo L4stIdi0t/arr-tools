@@ -354,7 +354,9 @@ export const useSettingsStore = defineStore('settings', () => {
     ],
     "check_song_with_recognition": true,
     "check_song_for_movement": true,
-    "convert_playlists": []
+    "convert_playlists": [],
+    "download_subtitles": true,
+    "subtitle_languages": ["en"]
   });
 
   async function getMusicvideoSettings() {

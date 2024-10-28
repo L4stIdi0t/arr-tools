@@ -15,7 +15,7 @@ config = ConfigManager().get_config()
 
 media_server = MediaServerinteracter(config.MEDIASERVER.media_server_type, config.MEDIASERVER.media_server_base_url,
                                      config.MEDIASERVER.media_server_api_key)
-radarr = RadarrAPI(config.RADARR.base_url, config.RADARR.api_key)
+radarr = None
 arr_items = []
 now_time = datetime.datetime.now(datetime.timezone.utc)
 
@@ -319,7 +319,9 @@ def main_run(dry: bool = False):
 
 
 def run(dry: bool = False):
+    global radarr
     try:
+        radarr = RadarrAPI(config.RADARR.base_url, config.RADARR.api_key)
         return main_run(dry)
     except Exception as error_message:
         pattern_length_difference = r"pyarr\.exceptions\.PyarrServerError: Internal Server Error: Expected query to return (\d+) rows but returned (\d+)"

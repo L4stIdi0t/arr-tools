@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.2.1",
+    "added": [
+      "Music Video; Also download subtitles and create an NFO file"
+    ],
+    "removed": [],
+    "changed": [
+      "Config file; Added a new option to download subtitles",
+      "Music video detection; The scene change detection is changed"
+    ]
+  },
+  {
     "version": "0.2.0",
     "added": [
       "Spotify to Mediaserver; A new worker that converts your playlists to audio and video playlists",
