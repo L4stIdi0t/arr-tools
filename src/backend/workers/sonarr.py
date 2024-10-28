@@ -244,6 +244,7 @@ def get_monitorable_items():
     # endregion
 
     # region Monitor episodes based on users watched episodes
+    recheck_releases = []
     max_played_episodes = []
     max_played_episodes_shows = []
     for item in media_server.get_max_played_episodes():
@@ -263,6 +264,11 @@ def get_monitorable_items():
 
         series_id = max_played_episodes_shows[idx]["id"]
         episodes_data = sonarr.get_episode(series_id, series=True)
+
+        for episode in episodes_data:
+            if not episode.get('hasFile', True) and episode.get('monitored', False):
+                recheck_releases.append(series_id)
+                break
 
         max_episode_data = defaultdict(int)
         if config.SONARR.base_monitoring_amount == 0:
@@ -311,6 +317,11 @@ def get_monitorable_items():
                         monitor_episodes += \
                             _monitor_episodes_behind(episodes_data, max_episode['Season'], max_episode["Episode"], 6,
                                                      max_played_episodes_shows[idx])
+
+    temp = (item['series_id'] for item in monitor_episodes)
+    for index, item in enumerate(recheck_releases):
+        if item in temp:
+            recheck_releases.pop(index)
     # endregion
 
     # region Monitor base amount and create unmonitor episodes
@@ -347,7 +358,7 @@ def get_monitorable_items():
     unmonitor_episodes = [episode for episode in unmonitor_episodes if episode['episode_id'] not in monitored_ids]
     # endregion
 
-    return monitor, unmonitor, monitor_episodes, unmonitor_episodes
+    return monitor, unmonitor, monitor_episodes, unmonitor_episodes, recheck_releases
 
 
 def get_deletable_items():
@@ -492,6 +503,10 @@ def change_monitoring_episodes(monitoring_changes: list, monitor: bool):
             sonarr.post_command("SeriesSearch", seriesId=_id)
 
 
+def search_series(series_id: int):
+    sonarr.post_command("SeriesSearch", seriesId=series_id)
+
+
 def check_if_sonarr_is_busy():
     commands = sonarr.get_command()
     for command in commands:
@@ -516,10 +531,11 @@ def main_run(dry: bool = False):
 
     arr_items = sonarr.get_series()
 
-    quality_changes, _, unmonitor = get_quality_changes()
-    monitorable_items, unmonitorable_items, monitor_episodes, unmonitor_episodes = get_monitorable_items()
+    quality_changes, monitor, unmonitor = get_quality_changes()
+    monitorable_items, unmonitorable_items, monitor_episodes, unmonitor_episodes, recheck_releases = get_monitorable_items()
     deletable_items = get_deletable_items()
-    # unmonitorable_items += unmonitor
+    monitorable_items += monitor
+    unmonitorable_items += unmonitor
     unmonitorable_items = [item for item in unmonitorable_items if
                            item not in monitorable_items and item.get('monitored', False)]
     monitorable_items = [item for item in monitorable_items if not item.get('monitored', False)]
@@ -540,6 +556,8 @@ def main_run(dry: bool = False):
     change_monitoring(unmonitorable_items, False)
     change_monitoring_episodes(monitor_episodes, True)
     change_monitoring_episodes(unmonitor_episodes, False)
+    for item in recheck_releases:
+        search_series(item)
     if config.SONARR.delete_unmonitored_files:
         delete_unmonitored_files()
     print("Ran the Sonarr instance")

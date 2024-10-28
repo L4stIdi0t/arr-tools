@@ -1,8 +1,16 @@
 [
   {
+    "version": "0.2.2",
+    "added": [],
+    "removed": [],
+    "changed": [
+      "It automatically searches again for not yet processed episodes"
+    ]
+  },
+  {
     "version": "0.2.1",
     "added": [
-      "Music Video; Also download subtitles and create an NFO file"
+      "Music Video; Also downloads subtitles and create an NFO file"
     ],
     "removed": [],
     "changed": [
