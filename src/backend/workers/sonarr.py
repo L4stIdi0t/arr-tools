@@ -1,5 +1,6 @@
 import datetime
 import re
+import time
 from collections import defaultdict
 
 from sqlalchemy.orm import Session
@@ -23,6 +24,8 @@ arr_items = []
 now_time = datetime.datetime.now(datetime.timezone.utc)
 
 db: Session = next(get_program_db())
+
+rechecked_history = {}
 
 
 def get_quality_changes():
@@ -517,7 +520,7 @@ def check_if_sonarr_is_busy():
 
 def main_run(dry: bool = False):
     # Used in case the arr is managed while updating and there is a difference in length
-    global arr_items, config, now_time
+    global arr_items, config, now_time, rechecked_history
 
     config = ConfigManager().get_config()
     now_time = datetime.datetime.now(datetime.timezone.utc)
@@ -530,6 +533,8 @@ def main_run(dry: bool = False):
         return
 
     arr_items = sonarr.get_series()
+    # arr_items = [item for item in arr_items if item['title'] == "MINDHUNTER"]
+    # print(arr_items)
 
     quality_changes, monitor, unmonitor = get_quality_changes()
     monitorable_items, unmonitorable_items, monitor_episodes, unmonitor_episodes, recheck_releases = get_monitorable_items()
@@ -556,10 +561,29 @@ def main_run(dry: bool = False):
     change_monitoring(unmonitorable_items, False)
     change_monitoring_episodes(monitor_episodes, True)
     change_monitoring_episodes(unmonitor_episodes, False)
-    for item in recheck_releases:
-        search_series(item)
     if config.SONARR.delete_unmonitored_files:
         delete_unmonitored_files()
+
+    final_recheck_releases = []
+    for item in set(recheck_releases):
+        now_time = time.time()
+        if item not in rechecked_history:
+            final_recheck_releases.append(item)
+            rechecked_history[item] = [now_time]
+            continue
+
+        checked_times = rechecked_history[item]
+        if checked_times[0] + 3600 < now_time:
+            del rechecked_history[item][0]
+        if len(checked_times) >= 3:
+            continue
+
+        final_recheck_releases.append(item)
+        rechecked_history[item].append(now_time)
+
+    for item in final_recheck_releases:
+        search_series(item)
+
     print("Ran the Sonarr instance")
 
 
