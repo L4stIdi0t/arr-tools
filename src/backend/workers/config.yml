@@ -3,14 +3,14 @@ workers:
     enabled: true
     schedule:
       type: interval
-      interval: 3
+      interval: 6
     max_runtime: null
     max_instances: 1
   workers.sonarr:
     enabled: true
     schedule:
       type: interval
-      interval: 3
+      interval: 6
     max_runtime: null
     max_instances: 1
   workers.spot_to_mediaserver:
