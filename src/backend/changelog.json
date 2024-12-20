@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.2.3",
+    "added": [],
+    "removed": [],
+    "changed": [
+      "Swipearr for Sonarr should support list exclusion"
+    ]
+  },
+  {
     "version": "0.2.2",
     "added": [],
     "removed": [],
