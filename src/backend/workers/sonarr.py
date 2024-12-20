@@ -131,6 +131,7 @@ def _monitor_episodes_ahead(episodes, season_number, episode_number, ahead_count
     episode_ids = []
     count = 0
     ahead_count += 1
+    episodes = sorted(episodes, key=lambda ep: (ep['seasonNumber'], ep['episodeNumber']))
     for episode in episodes:
         if season_number == episode['seasonNumber'] and episode_number == episode['episodeNumber'] and count == 0:
             count += 1
@@ -154,6 +155,7 @@ def _monitor_episodes_behind(episodes, season_number, episode_number, ahead_coun
     episode_ids = []
     count = 0
     ahead_count += 1
+    episodes = sorted(episodes, key=lambda ep: (ep['seasonNumber'], ep['episodeNumber']))
     episodes.reverse()
     for episode in episodes:
         if season_number == episode['seasonNumber'] and episode_number == episode['episodeNumber'] and count == 0:
@@ -269,7 +271,9 @@ def get_monitorable_items():
         episodes_data = sonarr.get_episode(series_id, series=True)
 
         for episode in episodes_data:
-            if not episode.get('hasFile', True) and episode.get('monitored', False):
+            airdate = datetime.datetime.strptime(episode.get('airDateUtc', "1900-01-01T00:00:00Z"),
+                                                 "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
+            if not episode.get('hasFile', True) and episode.get('monitored', False) and airdate < now_time:
                 recheck_releases.append(series_id)
                 break
 
