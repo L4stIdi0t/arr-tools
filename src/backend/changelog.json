@@ -6,7 +6,8 @@
     "changed": [
       "Swipearr for Sonarr should support list exclusion",
       "Fix wrongly monitoring season 0 episodes",
-      "Do not scan for unreleased episodes"
+      "Do not scan for unreleased episodes",
+      "Spotify to mediaserver checks if it is a Spotify generated playlist"
     ]
   },
   {
