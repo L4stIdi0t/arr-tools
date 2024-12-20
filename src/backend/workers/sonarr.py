@@ -157,24 +157,24 @@ def _monitor_episodes_behind(episodes, season_number, episode_number, ahead_coun
     ahead_count += 1
     episodes = sorted(episodes, key=lambda ep: (ep['seasonNumber'], ep['episodeNumber']))
     episodes.reverse()
+
     for episode in episodes:
         if season_number == episode['seasonNumber'] and episode_number == episode['episodeNumber'] and count == 0:
             count += 1
 
-        if count <= ahead_count and count != 0:
+        if count <= ahead_count and count != 0 and episode['seasonNumber'] != 0:
             count += 1
-            if season_number >= 1:
-                episode_ids.append({
-                    'episode_id': episode['id'],
-                    'series_id': series['id'],
-                    'monitored': episode['monitored'],
-                    'season_number': episode['seasonNumber'],
-                    'tags': series['tags']
-                })
+            episode_ids.append({
+                'episode_id': episode['id'],
+                'series_id': series['id'],
+                'monitored': episode['monitored'],
+                'season_number': episode['seasonNumber'],
+                'tags': series['tags']
+            })
 
-            if count > ahead_count:
-                continue
-        return episode_ids
+        if count > ahead_count:
+            continue
+    return episode_ids
 
 
 def get_monitorable_items():
@@ -537,8 +537,6 @@ def main_run(dry: bool = False):
         return
 
     arr_items = sonarr.get_series()
-    # arr_items = [item for item in arr_items if item['title'] == "MINDHUNTER"]
-    # print(arr_items)
 
     quality_changes, monitor, unmonitor = get_quality_changes()
     monitorable_items, unmonitorable_items, monitor_episodes, unmonitor_episodes, recheck_releases = get_monitorable_items()
