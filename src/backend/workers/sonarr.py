@@ -271,7 +271,7 @@ def get_monitorable_items():
         episodes_data = sonarr.get_episode(series_id, series=True)
 
         for episode in episodes_data:
-            airdate = datetime.datetime.strptime(episode.get('airDateUtc', "1900-01-01T00:00:00Z"),
+            airdate = datetime.datetime.strptime(episode.get('airDateUtc', "10000-01-01T00:00:00Z"),
                                                  "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
             if not episode.get('hasFile', True) and episode.get('monitored', False) and airdate < now_time:
                 recheck_releases.append(series_id)
