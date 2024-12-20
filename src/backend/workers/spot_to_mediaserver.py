@@ -141,6 +141,10 @@ def main():
     existing_server_playlists = media_server.get_playlist_items()
 
     for playlist in config.SPOTIFY.playlists:
+        playlist_id = playlist['id']
+        if playlist_id.startswith('37i9dQZF'):
+            print("Spotify API update, Spotify generated playlists no longer supported")
+            continue
         playlist_tracks = get_playlist_tracks(playlist['id'])
         if playlist['type'] in ['audio', 'both']:
             if not media_server_audio_tracks_by_title:

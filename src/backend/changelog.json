@@ -1,8 +1,27 @@
 [
   {
+    "version": "0.2.3",
+    "added": [],
+    "removed": [],
+    "changed": [
+      "Swipearr for Sonarr should support list exclusion",
+      "Fix wrongly monitoring season 0 episodes",
+      "Do not scan for unreleased episodes",
+      "Spotify to mediaserver checks if it is a Spotify generated playlist"
+    ]
+  },
+  {
+    "version": "0.2.2",
+    "added": [],
+    "removed": [],
+    "changed": [
+      "It automatically searches again for not yet processed episodes"
+    ]
+  },
+  {
     "version": "0.2.1",
     "added": [
-      "Music Video; Also download subtitles and create an NFO file"
+      "Music Video; Also downloads subtitles and create an NFO file"
     ],
     "removed": [],
     "changed": [

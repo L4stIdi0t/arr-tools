@@ -1,5 +1,6 @@
 import datetime
 import re
+import time
 from collections import defaultdict
 
 from sqlalchemy.orm import Session
@@ -23,6 +24,8 @@ arr_items = []
 now_time = datetime.datetime.now(datetime.timezone.utc)
 
 db: Session = next(get_program_db())
+
+rechecked_history = {}
 
 
 def get_quality_changes():
@@ -128,6 +131,7 @@ def _monitor_episodes_ahead(episodes, season_number, episode_number, ahead_count
     episode_ids = []
     count = 0
     ahead_count += 1
+    episodes = sorted(episodes, key=lambda ep: (ep['seasonNumber'], ep['episodeNumber']))
     for episode in episodes:
         if season_number == episode['seasonNumber'] and episode_number == episode['episodeNumber'] and count == 0:
             count += 1
@@ -151,25 +155,26 @@ def _monitor_episodes_behind(episodes, season_number, episode_number, ahead_coun
     episode_ids = []
     count = 0
     ahead_count += 1
+    episodes = sorted(episodes, key=lambda ep: (ep['seasonNumber'], ep['episodeNumber']))
     episodes.reverse()
+
     for episode in episodes:
         if season_number == episode['seasonNumber'] and episode_number == episode['episodeNumber'] and count == 0:
             count += 1
 
-        if count <= ahead_count and count != 0:
+        if count <= ahead_count and count != 0 and episode['seasonNumber'] != 0:
             count += 1
-            if (season_number >= 1 and episode['seasonNumber'] >= 1):
-                episode_ids.append({
-                    'episode_id': episode['id'],
-                    'series_id': series['id'],
-                    'monitored': episode['monitored'],
-                    'season_number': episode['seasonNumber'],
-                    'tags': series['tags']
-                })
+            episode_ids.append({
+                'episode_id': episode['id'],
+                'series_id': series['id'],
+                'monitored': episode['monitored'],
+                'season_number': episode['seasonNumber'],
+                'tags': series['tags']
+            })
 
-            if count > ahead_count:
-                continue
-        return episode_ids
+        if count > ahead_count:
+            continue
+    return episode_ids
 
 
 def get_monitorable_items():
@@ -244,6 +249,7 @@ def get_monitorable_items():
     # endregion
 
     # region Monitor episodes based on users watched episodes
+    recheck_releases = []
     max_played_episodes = []
     max_played_episodes_shows = []
     for item in media_server.get_max_played_episodes():
@@ -263,6 +269,15 @@ def get_monitorable_items():
 
         series_id = max_played_episodes_shows[idx]["id"]
         episodes_data = sonarr.get_episode(series_id, series=True)
+
+        for episode in episodes_data:
+            airdate = now_time
+            airdate_str = episode.get('airDateUtc', None)
+            if airdate_str:
+                airdate = datetime.datetime.strptime(airdate_str,"%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
+            if not episode.get('hasFile', True) and episode.get('monitored', False) and airdate < now_time:
+                recheck_releases.append(series_id)
+                break
 
         max_episode_data = defaultdict(int)
         if config.SONARR.base_monitoring_amount == 0:
@@ -311,6 +326,11 @@ def get_monitorable_items():
                         monitor_episodes += \
                             _monitor_episodes_behind(episodes_data, max_episode['Season'], max_episode["Episode"], 6,
                                                      max_played_episodes_shows[idx])
+
+    temp = (item['series_id'] for item in monitor_episodes)
+    for index, item in enumerate(recheck_releases):
+        if item in temp:
+            recheck_releases.pop(index)
     # endregion
 
     # region Monitor base amount and create unmonitor episodes
@@ -347,7 +367,7 @@ def get_monitorable_items():
     unmonitor_episodes = [episode for episode in unmonitor_episodes if episode['episode_id'] not in monitored_ids]
     # endregion
 
-    return monitor, unmonitor, monitor_episodes, unmonitor_episodes
+    return monitor, unmonitor, monitor_episodes, unmonitor_episodes, recheck_releases
 
 
 def get_deletable_items():
@@ -492,6 +512,10 @@ def change_monitoring_episodes(monitoring_changes: list, monitor: bool):
             sonarr.post_command("SeriesSearch", seriesId=_id)
 
 
+def search_series(series_id: int):
+    sonarr.post_command("SeriesSearch", seriesId=series_id)
+
+
 def check_if_sonarr_is_busy():
     commands = sonarr.get_command()
     for command in commands:
@@ -502,7 +526,7 @@ def check_if_sonarr_is_busy():
 
 def main_run(dry: bool = False):
     # Used in case the arr is managed while updating and there is a difference in length
-    global arr_items, config, now_time
+    global arr_items, config, now_time, rechecked_history
 
     config = ConfigManager().get_config()
     now_time = datetime.datetime.now(datetime.timezone.utc)
@@ -516,10 +540,11 @@ def main_run(dry: bool = False):
 
     arr_items = sonarr.get_series()
 
-    quality_changes, _, unmonitor = get_quality_changes()
-    monitorable_items, unmonitorable_items, monitor_episodes, unmonitor_episodes = get_monitorable_items()
+    quality_changes, monitor, unmonitor = get_quality_changes()
+    monitorable_items, unmonitorable_items, monitor_episodes, unmonitor_episodes, recheck_releases = get_monitorable_items()
     deletable_items = get_deletable_items()
-    # unmonitorable_items += unmonitor
+    monitorable_items += monitor
+    unmonitorable_items += unmonitor
     unmonitorable_items = [item for item in unmonitorable_items if
                            item not in monitorable_items and item.get('monitored', False)]
     monitorable_items = [item for item in monitorable_items if not item.get('monitored', False)]
@@ -542,6 +567,27 @@ def main_run(dry: bool = False):
     change_monitoring_episodes(unmonitor_episodes, False)
     if config.SONARR.delete_unmonitored_files:
         delete_unmonitored_files()
+
+    final_recheck_releases = []
+    for item in set(recheck_releases):
+        now_time = time.time()
+        if item not in rechecked_history:
+            final_recheck_releases.append(item)
+            rechecked_history[item] = [now_time]
+            continue
+
+        checked_times = rechecked_history[item]
+        if checked_times[0] + 3600 < now_time:
+            del rechecked_history[item][0]
+        if len(checked_times) >= 3:
+            continue
+
+        final_recheck_releases.append(item)
+        rechecked_history[item].append(now_time)
+
+    for item in final_recheck_releases:
+        search_series(item)
+
     print("Ran the Sonarr instance")
 
 

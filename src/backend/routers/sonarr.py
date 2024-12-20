@@ -6,6 +6,7 @@ from pyarr import SonarrAPI
 
 import schemas.settings as settings
 from utils.config_manager import ConfigManager
+from utils.customSonarApi import customSonarAPI
 from utils.log_manager import LoggingManager
 from workers.sonarr import delete_unmonitored_files
 from workers.sonarr import run as sonarr_run
@@ -14,7 +15,7 @@ from workers.sonarr import run as sonarr_run
 router = APIRouter(prefix="/sonarr", tags=["Sonarr"])
 config_manager = ConfigManager()
 config = config_manager.get_config()
-sonarr = SonarrAPI(config.SONARR.base_url, config.SONARR.api_key)
+sonarr = customSonarAPI(config.SONARR.base_url, config.SONARR.api_key)
 logging_manager = LoggingManager()
 
 
@@ -50,9 +51,9 @@ def edit_item(item: dict):
 def delete_item(
         id: int = Query(..., description="ID of the item to delete"),
         importListExclusion: bool = Query(True, description="Whether to add the item to import list exclusion"),
-        deleteFiles: bool = Query(False, description="Whether to delete associated files")
+        deleteFiles: bool = Query(True, description="Whether to delete associated files")
 ):
-    sonarr.del_series(id, delete_files=deleteFiles)
+    sonarr.del_series(id, delete_files=deleteFiles, add_import_list_exclusion=importListExclusion)
 
     return {"message": f"Item with ID {id} deleted successfully."}
 
