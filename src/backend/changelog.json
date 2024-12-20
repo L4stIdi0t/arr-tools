@@ -4,7 +4,9 @@
     "added": [],
     "removed": [],
     "changed": [
-      "Swipearr for Sonarr should support list exclusion"
+      "Swipearr for Sonarr should support list exclusion",
+      "Fix wrongly monitoring season 0 episodes",
+      "Do not scan for unreleased episodes"
     ]
   },
   {
