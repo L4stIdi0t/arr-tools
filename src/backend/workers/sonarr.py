@@ -163,7 +163,7 @@ def _monitor_episodes_behind(episodes, season_number, episode_number, ahead_coun
 
         if count <= ahead_count and count != 0:
             count += 1
-            if (season_number >= 1 and episode['seasonNumber'] >= 1):
+            if season_number >= 1:
                 episode_ids.append({
                     'episode_id': episode['id'],
                     'series_id': series['id'],
