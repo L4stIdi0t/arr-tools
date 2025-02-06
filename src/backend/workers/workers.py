@@ -15,6 +15,9 @@ class Worker:
         self.last_run = None
         self.running = False
         self.instances = 0
+        self.retry_delay = 10  # Retry delay in seconds
+        self.max_retries = 3  # Maximum number of retries for a worker
+        self.retries = 0  # Current retry count
 
     def run(self):
         current_time = datetime.now()
@@ -29,12 +32,28 @@ class Worker:
 
     def execute_worker(self):
         if self.instances < self.max_instances:
-            print(f"Running {self.name} worker...")
-            self.last_run = datetime.now()
-            self.running = True
-            script_module = import_module(f"{self.name}")
-            script_module.run()
-            self.running = False
+            try:
+                print(f"Running {self.name} worker...")
+                self.last_run = datetime.now()
+                self.running = True
+                self.retries = 0  # Reset retries on successful execution
+                self.instances += 1
+
+                # Dynamically load and execute the worker script
+                script_module = import_module(f"{self.name}")
+                script_module.run()
+
+            except Exception as e:
+                self.retries += 1
+                print(f"Error in {self.name} worker: {e}. Retrying in {self.retry_delay} seconds...")
+                if self.retries <= self.max_retries:
+                    time.sleep(self.retry_delay)  # Delay before retrying
+                    self.execute_worker()  # Retry execution
+                else:
+                    print(f"Max retries reached for {self.name} worker. Aborting...")
+            finally:
+                self.running = False
+                self.instances -= 1
         else:
             print(f"Maximum instances reached for {self.name}.")
 
