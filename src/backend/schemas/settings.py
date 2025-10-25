@@ -78,7 +78,12 @@ class SonarrSettings(BaseModel):
     delete_unmonitored_files: bool = False
     exclude_tags_from_deletion: list = []
 
-    popular_filters: dict = {"very_popular": [], "popular": [], "less_popular": [], "unpopular": []}
+    popular_filters: dict = {
+        "very_popular": [],
+        "popular": [],
+        "less_popular": [],
+        "unpopular": [],
+    }
 
 
 class RadarrSettings(BaseModel):
@@ -129,7 +134,12 @@ class RadarrSettings(BaseModel):
     delete_unmonitored_files: bool = False
     exclude_tags_from_deletion: list = []
 
-    popular_filters: dict = {"very_popular": [], "popular": [], "less_popular": [], "unpopular": []}
+    popular_filters: dict = {
+        "very_popular": [],
+        "popular": [],
+        "less_popular": [],
+        "unpopular": [],
+    }
 
 
 class SpotifySettings(BaseModel):
@@ -143,7 +153,14 @@ class MusicVideoSettings(BaseModel):
     use_imvdb: bool = True
     use_shazam_search: bool = True
     use_youtube_search: bool = False
-    good_keywords: list = ["official", "official video", "music video", "vevo", "uncensured", "uncensored"]
+    good_keywords: list = [
+        "official",
+        "official video",
+        "music video",
+        "vevo",
+        "uncensured",
+        "uncensored",
+    ]
     bad_keywords: list = ["acoustic", "lyrics", "remix"]
     exclude_words: list = [
         "tutorial",
@@ -152,14 +169,16 @@ class MusicVideoSettings(BaseModel):
         "karaoke",
         "lessons",
         "live",
-        "audio"
+        "audio",
     ]
     check_song_with_recognition: bool = True
     check_song_for_movement: bool = True
     convert_playlists: list = []
     download_subtitles: bool = True
     subtitle_languages: list = ["en"]
-    lastfm_api_key: str = "2dc3914abf35f0d9c92d97d8f8e42b43"  # Do not forget to change this, it is from beets...
+    lastfm_api_key: str = (
+        "2dc3914abf35f0d9c92d97d8f8e42b43"  # Do not forget to change this, it is from beets...
+    )
 
 
 class MediaServerSettings(BaseModel):

@@ -69,14 +69,19 @@ class EmbyAPI:
         return self._get_request(url)["Items"]
 
     def get_user_favorites(self, user_id, types=["Movie", "Series"]):
-        url_types = ''.join(f'{item}%2C' for item in types)
+        url_types = "".join(f"{item}%2C" for item in types)
         url = self._url_builder(
-            f"/Users/{user_id}/Items", recursive=True, Filters="IsFavorite", IncludeItemTypes=url_types
+            f"/Users/{user_id}/Items",
+            recursive=True,
+            Filters="IsFavorite",
+            IncludeItemTypes=url_types,
         )
         return self._get_request(url)["Items"]
 
     def get_user_resume(self, user_id):
-        url = self._url_builder(f"/Users/{user_id}/Items/Resume", recursive=True, MediaTypes="Video")
+        url = self._url_builder(
+            f"/Users/{user_id}/Items/Resume", recursive=True, MediaTypes="Video"
+        )
 
         return self._get_request(url)["Items"]
 
@@ -84,11 +89,17 @@ class EmbyAPI:
         # Why if querying movie, episode and serie it does not return all series? ...
         items = []
         url = self._url_builder(
-            f"/Users/{user_id}/Items", recursive=True, Filters="IsPlayed", IncludeItemTypes="Movie,Episode"
+            f"/Users/{user_id}/Items",
+            recursive=True,
+            Filters="IsPlayed",
+            IncludeItemTypes="Movie,Episode",
         )
         items += self._get_request(url)["Items"]
         url = self._url_builder(
-            f"/Users/{user_id}/Items", recursive=True, Filters="IsPlayed", IncludeItemTypes="Series"
+            f"/Users/{user_id}/Items",
+            recursive=True,
+            Filters="IsPlayed",
+            IncludeItemTypes="Series",
         )
         items += self._get_request(url)["Items"]
 
@@ -99,8 +110,10 @@ class EmbyAPI:
         return self._get_request(url)["Items"]
 
     def post_new_playlist(self, name, entry_ids, media_type):
-        string_ids = ','.join(map(str, entry_ids))
-        url = self._url_builder("/Playlists", name=name, ids=string_ids, media_type=media_type)
+        string_ids = ",".join(map(str, entry_ids))
+        url = self._url_builder(
+            "/Playlists", name=name, ids=string_ids, media_type=media_type
+        )
         return self._get_request(url, "POST")
 
     def get_playlist_items(self, id):
@@ -108,9 +121,13 @@ class EmbyAPI:
         return self._get_request(url)["Items"]
 
     def remove_items_from_playlist(self, id, entry_ids):
-        url = self._url_builder(f"/Playlists/{id}/Items", EntryIds=','.join(map(str, entry_ids)))
+        url = self._url_builder(
+            f"/Playlists/{id}/Items", EntryIds=",".join(map(str, entry_ids))
+        )
         return self._get_request(url, "DELETE")
 
     def add_items_to_playlist(self, id, entry_ids):
-        url = self._url_builder(f"/Playlists/{id}/Items", ids=','.join(map(str, entry_ids)))
+        url = self._url_builder(
+            f"/Playlists/{id}/Items", ids=",".join(map(str, entry_ids))
+        )
         return self._get_request(url, "POST")

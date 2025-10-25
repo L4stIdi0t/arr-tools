@@ -25,7 +25,7 @@ async def search_music():
 
 @router.get("/changelog")
 async def get_changelog():
-    with open('./changelog.json') as f:
+    with open("./changelog.json") as f:
         return JSONResponse(json.loads(f.read()))
 
 
@@ -38,7 +38,7 @@ async def get_settings() -> settings.Config:
 @router.get("/user-settings")
 async def get_user_settings():
     try:
-        with open('./data/user-config.json', 'r', encoding='utf-8') as userFile:
+        with open("./data/user-config.json", "r", encoding="utf-8") as userFile:
             return json.loads(userFile.read())
     except FileNotFoundError:
         return
@@ -46,7 +46,7 @@ async def get_user_settings():
 
 @router.put("/user-settings")
 async def put_user_settings(settings: Annotated[str, Form()]):
-    with open('./data/user-config.json', 'w', encoding='utf-8') as userFile:
+    with open("./data/user-config.json", "w", encoding="utf-8") as userFile:
         userFile.write(settings)
 
 
@@ -54,12 +54,14 @@ async def put_user_settings(settings: Annotated[str, Form()]):
 async def get_seen_items(db: program_db_dependency):
     return {
         "radarr": [item.itemId for item in db.query(SwipeArrSeenRadarr).all()],
-        "sonarr": [item.itemId for item in db.query(SwipeArrSeenSonarr).all()]
+        "sonarr": [item.itemId for item in db.query(SwipeArrSeenSonarr).all()],
     }
 
 
 @router.post("/seen-item")
-async def add_seen_item(db: program_db_dependency, id: Annotated[int, Form()], arr: Annotated[str, Form()]):
+async def add_seen_item(
+    db: program_db_dependency, id: Annotated[int, Form()], arr: Annotated[str, Form()]
+):
     db_model = None
     arr = arr.casefold()
     if arr == "radarr":
@@ -70,9 +72,7 @@ async def add_seen_item(db: program_db_dependency, id: Annotated[int, Form()], a
     if not db_model:
         return
 
-    new_item = db_model(
-        itemId=id
-    )
+    new_item = db_model(itemId=id)
     db.add(new_item)
     db.commit()
 

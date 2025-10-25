@@ -5,8 +5,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
 from database.database import get_program_db
-from models.media import FavoriteMovies, FavoriteSeries, OnResumeMovies, OnResumeSeries, PlayedMovies, PlayedSeries, \
-    PlayedEpisodes
+from models.media import (
+    FavoriteMovies,
+    FavoriteSeries,
+    OnResumeMovies,
+    OnResumeSeries,
+    PlayedMovies,
+    PlayedSeries,
+    PlayedEpisodes,
+)
 from utils.custom_emby_api import EmbyAPI
 from utils.custom_jellyfin_api import JellyfinAPI
 
@@ -20,9 +27,13 @@ class MediaServerinteracter:
         self.media_server_base_url = f"{media_server_base_url.rstrip('/')}"
 
         if self.media_server_type == "emby":
-            self.client = EmbyAPI(self.media_server_api_key, f"{self.media_server_base_url}/emby")
+            self.client = EmbyAPI(
+                self.media_server_api_key, f"{self.media_server_base_url}/emby"
+            )
         elif self.media_server_type == "jellyfin":
-            self.client = JellyfinAPI(self.media_server_api_key, self.media_server_base_url)
+            self.client = JellyfinAPI(
+                self.media_server_api_key, self.media_server_base_url
+            )
         else:
             raise Exception("Media server type not supported " + self.media_server_type)
 
@@ -65,8 +76,8 @@ class MediaServerinteracter:
     def update_db(self, user_id, items, table):
         utc_now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
         for item in items:
-            media_id = item['Id']
-            media_name = item['Name']
+            media_id = item["Id"]
+            media_name = item["Name"]
 
             # Check if the favorite already exists in the database
             existing_item = self.db.query(table).filter_by(mediaId=media_id).first()
@@ -78,15 +89,12 @@ class MediaServerinteracter:
                     flag_modified(existing_item, "userIds")
             else:
                 new_favorite = table(
-                    name=media_name,
-                    mediaId=media_id,
-                    userIds=[user_id],
-                    date=utc_now
+                    name=media_name, mediaId=media_id, userIds=[user_id], date=utc_now
                 )
                 self.db.add(new_favorite)
 
         # Remove the user ID from items they no longer favorite
-        item_ids = [item['Id'] for item in items]
+        item_ids = [item["Id"] for item in items]
         for item in self.db.query(table).all():
             if str(item.mediaId) not in str(item_ids):
                 if user_id in item.userIds:
@@ -122,11 +130,13 @@ class MediaServerinteracter:
             userIds_set = set(serie.userIds)
             if len(userIds_set - ignore_user_ids_set) == 0:
                 continue
-            favorites['Movies'].append(
+            favorites["Movies"].append(
                 {
                     "Name": serie.name,
                     "Id": serie.mediaId,
-                    "Date": datetime.datetime.fromtimestamp(serie.date, tz=datetime.timezone.utc)
+                    "Date": datetime.datetime.fromtimestamp(
+                        serie.date, tz=datetime.timezone.utc
+                    ),
                 }
             )
         serie_rows = self.db.query(FavoriteSeries).all()
@@ -134,11 +144,13 @@ class MediaServerinteracter:
             userIds_set = set(serie.userIds)
             if len(userIds_set - ignore_user_ids_set) == 0:
                 continue
-            favorites['Series'].append(
+            favorites["Series"].append(
                 {
                     "Name": serie.name,
                     "Id": serie.mediaId,
-                    "Date": datetime.datetime.fromtimestamp(serie.date, tz=datetime.timezone.utc)
+                    "Date": datetime.datetime.fromtimestamp(
+                        serie.date, tz=datetime.timezone.utc
+                    ),
                 }
             )
 
@@ -175,11 +187,13 @@ class MediaServerinteracter:
             userIds_set = set(movie.userIds)
             if len(userIds_set - ignore_user_ids_set) == 0:
                 continue
-            favorites['Movies'].append(
+            favorites["Movies"].append(
                 {
                     "Name": movie.name,
                     "Id": movie.mediaId,
-                    "Date": datetime.datetime.fromtimestamp(movie.date, tz=datetime.timezone.utc)
+                    "Date": datetime.datetime.fromtimestamp(
+                        movie.date, tz=datetime.timezone.utc
+                    ),
                 }
             )
         serie_rows = self.db.query(OnResumeSeries).all()
@@ -187,11 +201,13 @@ class MediaServerinteracter:
             userIds_set = set(serie.userIds)
             if len(userIds_set - ignore_user_ids_set) == 0:
                 continue
-            favorites['Series'].append(
+            favorites["Series"].append(
                 {
                     "Name": serie.name,
                     "Id": serie.mediaId,
-                    "Date": datetime.datetime.fromtimestamp(serie.date, tz=datetime.timezone.utc)
+                    "Date": datetime.datetime.fromtimestamp(
+                        serie.date, tz=datetime.timezone.utc
+                    ),
                 }
             )
 
@@ -209,7 +225,9 @@ class MediaServerinteracter:
                 for episode in episodes:
                     new_format = {}
                     new_format["Name"] = episode["SeriesName"]
-                    new_format["Id"] = f'{episode["SeriesId"]}S{episode["ParentIndexNumber"]}E{episode["IndexNumber"]}'
+                    new_format["Id"] = (
+                        f'{episode["SeriesId"]}S{episode["ParentIndexNumber"]}E{episode["IndexNumber"]}'
+                    )
                     episodes_formatted.append(new_format)
 
                 self.update_db(user_id, movies, PlayedMovies)
@@ -230,11 +248,13 @@ class MediaServerinteracter:
             userIds_set = set(movie.userIds)
             if len(userIds_set - ignore_user_ids_set) == 0:
                 continue
-            played['Movies'].append(
+            played["Movies"].append(
                 {
                     "Name": movie.name,
                     "Id": movie.mediaId,
-                    "Date": datetime.datetime.fromtimestamp(movie.date, tz=datetime.timezone.utc)
+                    "Date": datetime.datetime.fromtimestamp(
+                        movie.date, tz=datetime.timezone.utc
+                    ),
                 }
             )
         serie_rows = self.db.query(PlayedSeries).all()
@@ -242,11 +262,13 @@ class MediaServerinteracter:
             userIds_set = set(serie.userIds)
             if len(userIds_set - ignore_user_ids_set) == 0:
                 continue
-            played['Series'].append(
+            played["Series"].append(
                 {
                     "Name": serie.name,
                     "Id": serie.mediaId,
-                    "Date": datetime.datetime.fromtimestamp(serie.date, tz=datetime.timezone.utc)
+                    "Date": datetime.datetime.fromtimestamp(
+                        serie.date, tz=datetime.timezone.utc
+                    ),
                 }
             )
         episode_rows = self.db.query(PlayedEpisodes).all()
@@ -254,18 +276,20 @@ class MediaServerinteracter:
             userIds_set = set(episode.userIds)
             if len(userIds_set - ignore_user_ids_set) == 0:
                 continue
-            split = episode.mediaId.split('S')
+            split = episode.mediaId.split("S")
             _id = split[0]
-            split = split[1].split('E')
+            split = split[1].split("E")
             season_number = split[0]
             episode_number = split[1]
-            played['Episodes'].append(
+            played["Episodes"].append(
                 {
                     "Name": episode.name,
                     "Id": _id,
                     "Season": season_number,
                     "Episode": episode_number,
-                    "Date": datetime.datetime.fromtimestamp(episode.date, tz=datetime.timezone.utc)
+                    "Date": datetime.datetime.fromtimestamp(
+                        episode.date, tz=datetime.timezone.utc
+                    ),
                 }
             )
 
@@ -287,9 +311,9 @@ class MediaServerinteracter:
             if len(user_ids_set - ignore_user_ids_set) == 0:
                 continue
 
-            split = episode.mediaId.split('S')
+            split = episode.mediaId.split("S")
             _id = split[0]
-            split = split[1].split('E')
+            split = split[1].split("E")
             season_number = int(split[0])
             episode_number = int(split[1])
 
@@ -298,27 +322,36 @@ class MediaServerinteracter:
                     continue
 
                 show_key = (user_id, _id)
-                current_episode = {
-                    "Season": season_number,
-                    "Episode": episode_number
-                }
+                current_episode = {"Season": season_number, "Episode": episode_number}
 
                 if show_key not in max_episodes_per_show_per_user:
                     max_episodes_per_show_per_user[show_key] = {
                         "Name": episode.name,
                         "Id": _id,
                         "Episodes": [current_episode],
-                        "Date": datetime.datetime.fromtimestamp(episode.date, tz=datetime.timezone.utc)
+                        "Date": datetime.datetime.fromtimestamp(
+                            episode.date, tz=datetime.timezone.utc
+                        ),
                     }
                 else:
                     # Check if the current episode is higher
-                    max_season = max_episodes_per_show_per_user[show_key]["Episodes"][-1]["Season"]
-                    max_episode = max_episodes_per_show_per_user[show_key]["Episodes"][-1]["Episode"]
+                    max_season = max_episodes_per_show_per_user[show_key]["Episodes"][
+                        -1
+                    ]["Season"]
+                    max_episode = max_episodes_per_show_per_user[show_key]["Episodes"][
+                        -1
+                    ]["Episode"]
                     if (season_number > max_season) or (
-                            season_number == max_season and episode_number > max_episode):
-                        max_episodes_per_show_per_user[show_key]["Episodes"][-1] = current_episode
-                        max_episodes_per_show_per_user[show_key]["Date"] = datetime.datetime.fromtimestamp(
-                            episode.date, tz=datetime.timezone.utc)
+                        season_number == max_season and episode_number > max_episode
+                    ):
+                        max_episodes_per_show_per_user[show_key]["Episodes"][
+                            -1
+                        ] = current_episode
+                        max_episodes_per_show_per_user[show_key]["Date"] = (
+                            datetime.datetime.fromtimestamp(
+                                episode.date, tz=datetime.timezone.utc
+                            )
+                        )
 
         # Combine episodes by show
         combined_episodes = {}
@@ -336,11 +369,9 @@ class MediaServerinteracter:
             for user in self.client_users:
                 user_id = user["Id"]
                 favorites = self.client.get_user_favorites(user["Id"])
-                favorites = [
-                    d for d in favorites if d["Type"] in played_item_types
-                ]
+                favorites = [d for d in favorites if d["Type"] in played_item_types]
                 for favorite in favorites:
-                    if favorite['UserData']['Played']:
+                    if favorite["UserData"]["Played"]:
                         self.client.unmark_item_as_favorite(user_id, favorite["Id"])
         else:
             raise Exception("Media server type not supported " + self.media_server_type)
@@ -349,26 +380,30 @@ class MediaServerinteracter:
         if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
             libraries = self.client.get_media_libraries()
             music_libraries_ids = [
-                d['Id'] for d in libraries if d["CollectionType"] == "music"
+                d["Id"] for d in libraries if d["CollectionType"] == "music"
             ]
 
             music_items = []
 
             for music_library_id in music_libraries_ids:
-                music_items.extend(self.client.get_items(IncludeItemTypes="Audio", ParentId=music_library_id))
+                music_items.extend(
+                    self.client.get_items(
+                        IncludeItemTypes="Audio", ParentId=music_library_id
+                    )
+                )
 
             unique_ids = set()
             new_music_items = []
             for item in music_items:
-                item_id = item['Id']
+                item_id = item["Id"]
                 if item_id in unique_ids:
                     continue
                 unique_ids.add(item_id)
                 new_item = {
-                    'title': item['Name'],
-                    'id': item_id,
-                    'artists': item['Artists'],
-                    'album': item['Album'],
+                    "title": item["Name"],
+                    "id": item_id,
+                    "artists": item["Artists"],
+                    "album": item["Album"],
                 }
                 new_music_items.append(new_item)
 
@@ -380,26 +415,30 @@ class MediaServerinteracter:
         if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
             libraries = self.client.get_media_libraries()
             music_video_library_ids = [
-                d['Id'] for d in libraries if d["CollectionType"] == "musicvideos"
+                d["Id"] for d in libraries if d["CollectionType"] == "musicvideos"
             ]
 
             music_video_items = []
 
             for music_library_id in music_video_library_ids:
-                music_video_items.extend(self.client.get_items(IncludeItemTypes="Audio", ParentId=music_library_id))
+                music_video_items.extend(
+                    self.client.get_items(
+                        IncludeItemTypes="Audio", ParentId=music_library_id
+                    )
+                )
 
             unique_ids = set()
             new_music_video_items = []
             for item in music_video_items:
-                item_id = item['Id']
+                item_id = item["Id"]
                 if item_id in unique_ids:
                     continue
                 unique_ids.add(item_id)
                 new_item = {
-                    'title': item['Name'],
-                    'id': item_id,
-                    'artists': item['Artists'],
-                    'album': item['Album'],
+                    "title": item["Name"],
+                    "id": item_id,
+                    "artists": item["Artists"],
+                    "album": item["Album"],
                 }
                 new_music_video_items.append(new_item)
 
@@ -411,7 +450,7 @@ class MediaServerinteracter:
         if self.media_server_type == "emby" or self.media_server_type == "jellyfin":
             libraries = self.client.get_media_libraries()
             playlist_library_ids = [
-                d['Id'] for d in libraries if d["CollectionType"] == "playlists"
+                d["Id"] for d in libraries if d["CollectionType"] == "playlists"
             ]
 
             playlist_items = []
@@ -420,18 +459,23 @@ class MediaServerinteracter:
                 user_id = user["Id"]
                 for playlist_library_id in playlist_library_ids:
                     playlist_items.extend(
-                        self.client.get_items(user_id=user_id, IncludeItemTypes="Audio", ParentId=playlist_library_id))
+                        self.client.get_items(
+                            user_id=user_id,
+                            IncludeItemTypes="Audio",
+                            ParentId=playlist_library_id,
+                        )
+                    )
 
             unique_ids = set()
             new_playlist_items = []
             for item in playlist_items:
-                item_id = item['Id']
+                item_id = item["Id"]
                 if item_id in unique_ids:
                     continue
                 unique_ids.add(item_id)
                 new_item = {
-                    'title': item['Name'],
-                    'id': item_id,
+                    "title": item["Name"],
+                    "id": item_id,
                 }
                 new_playlist_items.append(new_item)
 

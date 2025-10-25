@@ -8,6 +8,7 @@ Base = declarative_base()
 
 class JSONEncodedDict(TypeDecorator):
     """Enables JSON storage by encoding and decoding on the fly."""
+
     impl = VARCHAR
     cache_ok = True
 
@@ -26,14 +27,14 @@ class JSONEncodedDict(TypeDecorator):
 
 
 class SwipeArrSeenRadarr(Base):
-    __tablename__ = 'swipeArrSeenRadarr'
+    __tablename__ = "swipeArrSeenRadarr"
 
     id = Column(Integer, primary_key=True)
     itemId = Column(Integer, nullable=False)
 
 
 class SwipeArrSeenSonarr(Base):
-    __tablename__ = 'swipeArrSeenSonarr'
+    __tablename__ = "swipeArrSeenSonarr"
 
     id = Column(Integer, primary_key=True)
     itemId = Column(Integer, nullable=False)

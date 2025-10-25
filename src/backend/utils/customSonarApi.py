@@ -26,7 +26,10 @@ class customSonarAPI(SonarrAPI):
 
     # DELETE /series/{id}
     def del_series(
-            self, id_: int, delete_files: bool = False, add_import_list_exclusion: bool = False
+        self,
+        id_: int,
+        delete_files: bool = False,
+        add_import_list_exclusion: bool = False,
     ) -> Union[Response, JsonObject, dict[Any, Any]]:
         """Delete the series with the given ID
 
@@ -40,6 +43,6 @@ class customSonarAPI(SonarrAPI):
         # File deletion does not work
         params = {
             "deleteFiles": delete_files,
-            "addImportListExclusion": add_import_list_exclusion
+            "addImportListExclusion": add_import_list_exclusion,
         }
         return self._delete(f"series/{id_}", self.ver_uri, params=params)

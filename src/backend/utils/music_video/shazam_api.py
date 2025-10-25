@@ -9,7 +9,10 @@ from random_user_agent.user_agent import UserAgent
 
 from utils.music_video.validators import validate_youtube_title
 
-user_agent_rotator = UserAgent(operating_systems=[OperatingSystem.ANDROID.value, OperatingSystem.IOS.value], limit=100)
+user_agent_rotator = UserAgent(
+    operating_systems=[OperatingSystem.ANDROID.value, OperatingSystem.IOS.value],
+    limit=100,
+)
 
 
 def shazam_cdn_search(title: str, artists: list, track_id: int = 0):
@@ -20,7 +23,7 @@ def shazam_cdn_search(title: str, artists: list, track_id: int = 0):
         "X-Shazam-Platform": "IPHONE",
         "X-Shazam-AppVersion": "14.1.0",
         "Accept": "*/*",
-        "Accept-Language": 'en',
+        "Accept-Language": "en",
         "Accept-Encoding": "gzip, deflate",
         "User-Agent": user_agent_rotator.get_random_user_agent(),
     }
@@ -31,7 +34,7 @@ def shazam_cdn_search(title: str, artists: list, track_id: int = 0):
 
     cdn_data = cdn_data.json()
     youtube_url = cdn_data.get("actions", None)[0].get("uri", None)
-    if youtube_url is not None and 'youtu' in youtube_url:
+    if youtube_url is not None and "youtu" in youtube_url:
         if not validate_youtube_title(cdn_data.get("caption"), title, artists):
             return None
         youtube_url = youtube_url.replace("https://youtu.be/", "")
@@ -41,7 +44,9 @@ def shazam_cdn_search(title: str, artists: list, track_id: int = 0):
         return None
 
 
-def shazam_confirm_song(file_path: str, song_name: str, artists: list, album: str = None):
+def shazam_confirm_song(
+    file_path: str, song_name: str, artists: list, album: str = None
+):
     shazam = shazamio.Shazam()
     try:
         audio_data = None
@@ -72,9 +77,11 @@ def shazam_confirm_song(file_path: str, song_name: str, artists: list, album: st
                 audio_bytes = buffer.getvalue()
 
             recognized_track_info = asyncio.run(shazam.recognize(audio_bytes))
-            track_title = recognized_track_info.get('track', {}).get('title', None)
-            track_artist = recognized_track_info.get('track', {}).get('subtitle', None)
-            if validate_youtube_title(f"{track_title} {track_artist}", song_name, artists):
+            track_title = recognized_track_info.get("track", {}).get("title", None)
+            track_artist = recognized_track_info.get("track", {}).get("subtitle", None)
+            if validate_youtube_title(
+                f"{track_title} {track_artist}", song_name, artists
+            ):
                 return True
         return False
     except Exception as e:

@@ -17,7 +17,9 @@ def validate_youtube_title(title: str, song_title: str, song_artists: list):
 
     score = 100
 
-    if any(fuzzy_str_match(title, bad_keyword) for bad_keyword in mv_config.bad_keywords):
+    if any(
+        fuzzy_str_match(title, bad_keyword) for bad_keyword in mv_config.bad_keywords
+    ):
         return False
     for good_keyword in mv_config.good_keywords:
         if fuzzy_str_match(title, good_keyword):
@@ -26,20 +28,28 @@ def validate_youtube_title(title: str, song_title: str, song_artists: list):
         if fuzzy_str_match(title, bad_keyword):
             score -= 1
 
-    title = ' '.join(''.join(e for e in title if e.isalnum() or e.isspace()).split())
-    title_words = title.split(' ')
+    title = " ".join("".join(e for e in title if e.isalnum() or e.isspace()).split())
+    title_words = title.split(" ")
 
-    song_title = ' '.join(''.join(e for e in song_title if e.isalnum() or e.isspace()).split())
-    song_title_words = song_title.split(' ')
+    song_title = " ".join(
+        "".join(e for e in song_title if e.isalnum() or e.isspace()).split()
+    )
+    song_title_words = song_title.split(" ")
 
     for song_word in song_title_words:
-        if not any(fuzzy_str_match(song_word, title_word) for title_word in title_words):
+        if not any(
+            fuzzy_str_match(song_word, title_word) for title_word in title_words
+        ):
             return False
 
-    artists = ' '.join(map(str, song_artists))
-    artists = ' '.join(''.join(e for e in artists if e.isalnum() or e.isspace()).split())
-    artists_words = artists.split(' ')
+    artists = " ".join(map(str, song_artists))
+    artists = " ".join(
+        "".join(e for e in artists if e.isalnum() or e.isspace()).split()
+    )
+    artists_words = artists.split(" ")
 
     for title_word in title_words:
-        if any(fuzzy_str_match(title_word, artist_word) for artist_word in artists_words):
+        if any(
+            fuzzy_str_match(title_word, artist_word) for artist_word in artists_words
+        ):
             return score

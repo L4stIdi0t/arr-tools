@@ -28,9 +28,12 @@ media_base.metadata.create_all(program_data_engine)
 web_base.metadata.create_all(program_data_engine)
 
 # Create session makers for user and program data
-ProgramSessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=program_data_engine)
+ProgramSessionLocal = sessionmaker(
+    autocommit=False, autoflush=True, bind=program_data_engine
+)
 
 # endregion
+
 
 # region Dependency Injection
 def get_program_db():
@@ -39,6 +42,7 @@ def get_program_db():
         yield db
     finally:
         db.close()
+
 
 # Dependencies annotated with types for FastAPI
 program_db_dependency = Annotated[ProgramSessionLocal, Depends(get_program_db)]

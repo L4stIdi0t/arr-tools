@@ -7,8 +7,7 @@ from scenedetect import SceneManager, open_video, ContentDetector
 def find_scenes(video_path):
     video = open_video(video_path)
     scene_manager = SceneManager()
-    scene_manager.add_detector(
-        ContentDetector(threshold=42))
+    scene_manager.add_detector(ContentDetector(threshold=42))
     scene_manager.detect_scenes(video)
     return scene_manager.get_scene_list()
 
@@ -55,12 +54,16 @@ def detect_movement(video_path, skip_frames, check_duration, threshold=25):
             break
 
         if frame_count % skip_frames == 0:
-            if frame_count >= start_check and frame_count < (start_check + fps * check_duration):
+            if frame_count >= start_check and frame_count < (
+                start_check + fps * check_duration
+            ):
                 if prev_frame is not None and frame_has_movement(prev_frame, frame):
                     movement_detected = True
                     break
 
-            if frame_count >= center_check and frame_count < (center_check + fps * check_duration):
+            if frame_count >= center_check and frame_count < (
+                center_check + fps * check_duration
+            ):
                 if prev_frame is not None and frame_has_movement(prev_frame, frame):
                     movement_detected = True
                     break

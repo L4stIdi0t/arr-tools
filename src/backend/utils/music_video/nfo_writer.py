@@ -12,7 +12,9 @@ config = config_manager.get_config()
 # endregion
 
 
-MUSICBRAINZ_HEADERS = {'User-Agent': 'Arr-Tools/0.1.0 (https://github.com/L4stIdi0t/arr-tools)'}
+MUSICBRAINZ_HEADERS = {
+    "User-Agent": "Arr-Tools/0.1.0 (https://github.com/L4stIdi0t/arr-tools)"
+}
 
 
 def get_lastfm_data(artist: str, title: str):
@@ -20,7 +22,7 @@ def get_lastfm_data(artist: str, title: str):
     response = requests.get(url)
     if response.status_code != 200:
         return None
-    return response.json().get('track', None)
+    return response.json().get("track", None)
 
 
 def get_musicbrainz_release_date(artist: str, title: str):
@@ -29,12 +31,13 @@ def get_musicbrainz_release_date(artist: str, title: str):
     if response.status_code != 200:
         return None
     try:
-        return response.json()['releases'][0]['date'].split('-')[0]
+        return response.json()["releases"][0]["date"].split("-")[0]
     except:
         return None
 
 
 import xml.sax.saxutils as saxutils
+
 
 def create_nfo(artist: str, title: str, thumb_relative_path: str):
     safe_artist = saxutils.escape(artist)
@@ -61,12 +64,15 @@ def create_nfo(artist: str, title: str, thumb_relative_path: str):
         </musicvideo>
         """
 
-    genre_tags = ''.join(f'    <genre>{genre["name"]}</genre>\n' for genre in lastfm_data['toptags']['tag'][:3]).strip()
+    genre_tags = "".join(
+        f'    <genre>{genre["name"]}</genre>\n'
+        for genre in lastfm_data["toptags"]["tag"][:3]
+    ).strip()
 
-    year_tag = '<year />'
+    year_tag = "<year />"
     year = get_musicbrainz_release_date(artist, title)
     if year:
-        year_tag = f'<year>{year}</year>'
+        year_tag = f"<year>{year}</year>"
 
     return f"""
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>

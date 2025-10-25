@@ -8,6 +8,7 @@ Base = declarative_base()
 
 class JSONEncodedDict(TypeDecorator):
     """Enables JSON storage by encoding and decoding on the fly."""
+
     impl = VARCHAR
     cache_ok = True
 
@@ -26,7 +27,7 @@ class JSONEncodedDict(TypeDecorator):
 
 
 class FavoriteMovies(Base):
-    __tablename__ = 'favoriteMovies'
+    __tablename__ = "favoriteMovies"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -37,7 +38,7 @@ class FavoriteMovies(Base):
 
 
 class FavoriteSeries(Base):
-    __tablename__ = 'favoriteSeries'
+    __tablename__ = "favoriteSeries"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -48,7 +49,7 @@ class FavoriteSeries(Base):
 
 
 class OnResumeMovies(Base):
-    __tablename__ = 'onResumeMovies'
+    __tablename__ = "onResumeMovies"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -59,7 +60,7 @@ class OnResumeMovies(Base):
 
 
 class OnResumeSeries(Base):
-    __tablename__ = 'onResumeSeries'
+    __tablename__ = "onResumeSeries"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -70,7 +71,7 @@ class OnResumeSeries(Base):
 
 
 class PlayedMovies(Base):
-    __tablename__ = 'PlayedMovies'
+    __tablename__ = "PlayedMovies"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -81,7 +82,7 @@ class PlayedMovies(Base):
 
 
 class PlayedSeries(Base):
-    __tablename__ = 'PlayedSeries'
+    __tablename__ = "PlayedSeries"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -92,7 +93,7 @@ class PlayedSeries(Base):
 
 
 class PlayedEpisodes(Base):
-    __tablename__ = 'PlayedEpisodes'
+    __tablename__ = "PlayedEpisodes"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -103,7 +104,7 @@ class PlayedEpisodes(Base):
 
 
 class musicVideoCache(Base):
-    __tablename__ = 'musicVideoCache'
+    __tablename__ = "musicVideoCache"
 
     id = Column(Integer, primary_key=True)
     youtubeId = Column(String)

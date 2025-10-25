@@ -2,20 +2,20 @@ from typing import Any, Dict, List
 
 
 def _evaluate_numeric_condition(value: float, condition: str) -> bool:
-    if '><' in condition:
-        min_val, max_val = map(float, condition.split('><'))
+    if "><" in condition:
+        min_val, max_val = map(float, condition.split("><"))
         return min_val < value < max_val
-    elif '>=' in condition:
+    elif ">=" in condition:
         return value >= float(condition[2:])
-    elif '<=' in condition:
+    elif "<=" in condition:
         return value <= float(condition[2:])
-    elif '>' in condition:
+    elif ">" in condition:
         return value > float(condition[1:])
-    elif '<' in condition:
+    elif "<" in condition:
         return value < float(condition[1:])
-    elif '!=' in condition:
+    elif "!=" in condition:
         return value != float(condition[2:])
-    elif '==' in condition:
+    elif "==" in condition:
         return value == float(condition[2:])
     return False
 
@@ -25,13 +25,13 @@ def _evaluate_string_condition(value: str, condition: str) -> bool:
     value = value.casefold().strip()
 
     def parse_condition(condition: str) -> bool:
-        if '&&' in condition:
-            parts = condition.split('&&')
+        if "&&" in condition:
+            parts = condition.split("&&")
             return all(parse_condition(part) for part in parts)
-        elif '||' in condition:
-            parts = condition.split('||')
+        elif "||" in condition:
+            parts = condition.split("||")
             return any(parse_condition(part) for part in parts)
-        elif '!' in condition:
+        elif "!" in condition:
             part = condition[1:]
             return part not in value
         else:
@@ -49,7 +49,7 @@ def _evaluate_condition(value: Any, condition: str) -> bool:
 
 
 def _get_value_from_path(item: Dict[str, Any], path: str) -> Any:
-    keys = path.split('.')
+    keys = path.split(".")
     for key in keys:
         if key not in item:
             return None
@@ -59,11 +59,13 @@ def _get_value_from_path(item: Dict[str, Any], path: str) -> Any:
 
 def _process_value(value: Any) -> Any:
     if isinstance(value, list):
-        return ' '.join(map(str, value))
+        return " ".join(map(str, value))
     return value
 
 
-def filter_items(items: List[Dict[str, Any]], filters: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def filter_items(
+    items: List[Dict[str, Any]], filters: List[Dict[str, str]]
+) -> List[Dict[str, Any]]:
     filtered_items = []
 
     for item in items:
@@ -82,6 +84,7 @@ def filter_items(items: List[Dict[str, Any]], filters: List[Dict[str, str]]) -> 
             filtered_items.append(item)
 
     return filtered_items
+
 
 # Example filters:
 # filters = [

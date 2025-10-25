@@ -28,6 +28,7 @@ db: Session = next(get_program_db())
 
 # endregion
 
+
 def _cleanup_files(base_path):
     directory, file_prefix = os.path.split(base_path)
     for filename in os.listdir(directory):
@@ -38,8 +39,13 @@ def _cleanup_files(base_path):
             except OSError as e:
                 print(f"Error: {e.filename} - {e.strerror}.")
 
+
 def _check_cache(title: str, artists: list, album: str = None):
-    existing_data = db.query(musicVideoCache).filter_by(title=title, artists=artists, album=album).first()
+    existing_data = (
+        db.query(musicVideoCache)
+        .filter_by(title=title, artists=artists, album=album)
+        .first()
+    )
     if not existing_data:
         return None
     if not existing_data.youtubeId and existing_data.dateAdded + 2592000 > time.time():
@@ -53,7 +59,9 @@ os.makedirs("./temp/downloading", exist_ok=True)
 shutil.rmtree("./temp/downloading", ignore_errors=True)  # Cleanup old downloads if any
 
 
-def _download_music_video(youtube_id: str, title: str, artists: list, album: str = None):
+def _download_music_video(
+    youtube_id: str, title: str, artists: list, album: str = None
+):
     ydl_opts = {
         # download the best mp4 format
         "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
@@ -67,17 +75,21 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
         "writesubtitles": config.MUSICVIDEO.download_subtitles,
         "writeautomaticsub": config.MUSICVIDEO.download_subtitles,
         "sponsorblock-mark": True,
-        'postprocessors': [{
-            'key': 'FFmpegVideoConvertor',
-            'preferedformat': 'mp4',
-        }]
+        "postprocessors": [
+            {
+                "key": "FFmpegVideoConvertor",
+                "preferedformat": "mp4",
+            }
+        ],
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([youtube_id])
 
     correct_song = True
     if config.MUSICVIDEO.check_song_with_recognition:
-        correct_song = shazam_confirm_song(f"./temp/downloading/{youtube_id}.mp4", title, artists, album)
+        correct_song = shazam_confirm_song(
+            f"./temp/downloading/{youtube_id}.mp4", title, artists, album
+        )
 
     if not correct_song:
         _cleanup_files(f"./temp/downloading/{youtube_id}")
@@ -94,13 +106,16 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
     artist_safe = make_filename_safe(artists[0])
     title_safe = make_filename_safe(title)
     os.makedirs(f"./musicVideoOutput/{artist_safe}", exist_ok=True)
-    shutil.move(f"./temp/downloading/{youtube_id}.mp4", f"./musicVideoOutput/{artist_safe}/{title_safe}.mp4")
+    shutil.move(
+        f"./temp/downloading/{youtube_id}.mp4",
+        f"./musicVideoOutput/{artist_safe}/{title_safe}.mp4",
+    )
 
     # region Download thumbnail from i.ytimg.com
     os.makedirs(f"./musicVideoOutput/{artist_safe}", exist_ok=True)
     thumbnail_urls = [
         f"https://i.ytimg.com/vi/{youtube_id}/maxresdefault.jpg",
-        f"https://i.ytimg.com/vi/{youtube_id}/hqdefault.jpg"
+        f"https://i.ytimg.com/vi/{youtube_id}/hqdefault.jpg",
     ]
     thumbnail_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.jpg"
     for url in thumbnail_urls:
@@ -117,7 +132,9 @@ def _download_music_video(youtube_id: str, title: str, artists: list, album: str
         srt_files = glob.glob(f"./temp/downloading/{youtube_id}*.{fmt}")
         for srt_file in srt_files:
             language_code = srt_file.split(f"{youtube_id}.")[-1]
-            new_srt_path = f"./musicVideoOutput/{artist_safe}/{title_safe}.{language_code}"
+            new_srt_path = (
+                f"./musicVideoOutput/{artist_safe}/{title_safe}.{language_code}"
+            )
             shutil.move(srt_file, new_srt_path)
     # endregion
 
@@ -140,7 +157,9 @@ def download_music_video(title: str, artists: list, album: str = None):
     if not mv_config.enabled:
         return False
 
-    if os.path.exists(f"./musicVideoOutput/{make_filename_safe(artists[0])}/{make_filename_safe(title)}.jpg"):
+    if os.path.exists(
+        f"./musicVideoOutput/{make_filename_safe(artists[0])}/{make_filename_safe(title)}.jpg"
+    ):
         return True
 
     print(f"Downloading {title} by {artists[0]}")
@@ -159,25 +178,38 @@ def download_music_video(title: str, artists: list, album: str = None):
                 db.commit()
                 return False
         except Exception as e:
-            logging_manager.log(f"Error downloading music video: {e}", level=logging.ERROR)
+            logging_manager.log(
+                f"Error downloading music video: {e}", level=logging.ERROR
+            )
             existing_data.downloadError = 1
             db.commit()
             return False
 
-    if not mv_config.use_youtube_search and not mv_config.use_shazam_search and not mv_config.use_imvdb:
+    if (
+        not mv_config.use_youtube_search
+        and not mv_config.use_shazam_search
+        and not mv_config.use_imvdb
+    ):
         raise NotImplementedError("No search method is enabled")
 
     youtube_id, additional_info = None, None
     if mv_config.use_imvdb:
-        youtube_id, additional_info = imvdb_search(title=title, artists=artists, album=album)
+        youtube_id, additional_info = imvdb_search(
+            title=title, artists=artists, album=album
+        )
     if youtube_id is None and mv_config.use_shazam_search:
         youtube_id = shazam_cdn_search(title=title, artists=artists)
     if youtube_id is None and mv_config.use_youtube_search:
         raise NotImplementedError("Youtube search is not yet implemented")
 
-    db_addition = musicVideoCache(youtubeId=youtube_id, title=title, artists=artists, album=album,
-                                  additionalInfo=additional_info,
-                                  dateAdded=round(time.time()))
+    db_addition = musicVideoCache(
+        youtubeId=youtube_id,
+        title=title,
+        artists=artists,
+        album=album,
+        additionalInfo=additional_info,
+        dateAdded=round(time.time()),
+    )
 
     if not youtube_id:
         db.add(db_addition)

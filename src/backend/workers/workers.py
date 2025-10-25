@@ -23,7 +23,11 @@ class Worker:
                 self.execute_worker()
             return  # Exit after one run if it's a startup type
         elif self.schedule["type"] == "interval":
-            next_run_time = self.last_run + timedelta(minutes=self.schedule["interval"]) if self.last_run else None
+            next_run_time = (
+                self.last_run + timedelta(minutes=self.schedule["interval"])
+                if self.last_run
+                else None
+            )
             if self.last_run is None or current_time >= next_run_time:
                 self.execute_worker()
 
@@ -67,7 +71,9 @@ class WorkerManager:
     def run_worker(self, worker):
         while True:
             worker.run()
-            time.sleep(1)  # Keep this to prevent a tight loop that consumes too much CPU.
+            time.sleep(
+                1
+            )  # Keep this to prevent a tight loop that consumes too much CPU.
 
 
 if __name__ == "__main__":

@@ -16,7 +16,12 @@ logging_manager = LoggingManager()
 
 # endregion
 
-@router.get("/settings", response_model=settings.MusicVideoSettings, description="Get Music video settings")
+
+@router.get(
+    "/settings",
+    response_model=settings.MusicVideoSettings,
+    description="Get Music video settings",
+)
 def get_settings() -> settings.MusicVideoSettings:
     config = config_manager.get_config()
     return config.MUSICVIDEO
@@ -24,7 +29,7 @@ def get_settings() -> settings.MusicVideoSettings:
 
 @router.post("/settings", description="Update Music video settings")
 def post_settings(settings: settings.MusicVideoSettings):
-    logging_manager.log('Updating Music video settings', level=logging.DEBUG)
+    logging_manager.log("Updating Music video settings", level=logging.DEBUG)
     config = config_manager.get_config()
     config.MUSICVIDEO = settings
     config_manager.save_config_file(config)
@@ -40,7 +45,7 @@ def get_playlists():
 
 @router.put("/playlist", description="Add a playlist for conversion")
 def put_playlist(
-        playlist_id: str = Query(..., description="ID of playlist"),
+    playlist_id: str = Query(..., description="ID of playlist"),
 ):
     """
     Add a playlist for conversion.
@@ -59,7 +64,9 @@ def put_playlist(
 
         return HTTPException(status_code=200, detail=f"Playlist added {playlist_id}")
     else:
-        raise HTTPException(status_code=400, detail=f"Playlist already exists {playlist_id}")
+        raise HTTPException(
+            status_code=400, detail=f"Playlist already exists {playlist_id}"
+        )
 
 
 @router.delete("/playlist", description="Delete a playlist from the conversion list")

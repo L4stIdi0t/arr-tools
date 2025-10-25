@@ -11,27 +11,27 @@ class LoggingManager:
         self.debug_file_overwrite = False
         if any(os.path.exists(f"./data/DEBUG{ext}") for ext in ["", ".txt", ".log"]):
             self.debug_file_overwrite = True
-            print('Debug file overwrite is enabled')
+            print("Debug file overwrite is enabled")
 
         self.setup_logging()
 
     def setup_logging(self):
         # Create a logger
-        self.logger = logging.getLogger('central_logger')
+        self.logger = logging.getLogger("central_logger")
         self.logger.setLevel(logging.INFO)
         if self.debug_file_overwrite:
             self.logger.setLevel(logging.DEBUG)
 
         fh = logging.FileHandler(self.log_file_path)
 
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
         fh.setFormatter(formatter)
 
         self.logger.addHandler(fh)
 
     def log(self, message, level=logging.INFO, print_message=True):
         if not self.logger:
-            print('Logger not initialized')
+            print("Logger not initialized")
 
         if level == logging.DEBUG:
             self.logger.debug(message)
@@ -49,6 +49,6 @@ class LoggingManager:
 
     def set_log_level(self, log_level):
         if self.debug_file_overwrite:
-            self.log('Debug file overwrite is enabled, ignoring log level change')
+            self.log("Debug file overwrite is enabled, ignoring log level change")
             return
         self.logger.setLevel(log_level)

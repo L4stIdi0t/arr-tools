@@ -19,7 +19,12 @@ logging_manager = LoggingManager()
 
 # endregion
 
-@router.get("/settings", response_model=settings.SpotifySettings, description="Get Spotify settings")
+
+@router.get(
+    "/settings",
+    response_model=settings.SpotifySettings,
+    description="Get Spotify settings",
+)
 def get_settings() -> settings.SpotifySettings:
     config = config_manager.get_config()
     return config.SPOTIFY
@@ -27,7 +32,7 @@ def get_settings() -> settings.SpotifySettings:
 
 @router.post("/settings", description="Update Spotify settings")
 def post_settings(settings: settings.SpotifySettings):
-    logging_manager.log('Updating Spotify settings', level=logging.DEBUG)
+    logging_manager.log("Updating Spotify settings", level=logging.DEBUG)
     config = config_manager.get_config()
     config.SPOTIFY = settings
     config_manager.save_config_file(config)
@@ -53,8 +58,10 @@ def get_playlist_id(playlist_url_id: str):
 
 @router.put("/playlist", description="Add a playlist for conversion")
 def put_playlist(
-        playlist_url_id: str = Query(..., description="Spotify playlist URL or ID"),
-        playlist_type: str = Query(..., description="Type of playlist: audio, video, or both")
+    playlist_url_id: str = Query(..., description="Spotify playlist URL or ID"),
+    playlist_type: str = Query(
+        ..., description="Type of playlist: audio, video, or both"
+    ),
 ):
     """
     Add a playlist for conversion.
@@ -74,29 +81,37 @@ def put_playlist(
 
     for playlist in config.SPOTIFY.playlists:
         if playlist["id"] == playlist_id:
-            raise HTTPException(status_code=400,
-                                detail=f"Playlist already exists {playlist['name']}, ID: {playlist_id}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Playlist already exists {playlist['name']}, ID: {playlist_id}",
+            )
 
     try:
-        auth_manager = SpotifyClientCredentials(client_id=config.SPOTIFY.client_id,
-                                                client_secret=config.SPOTIFY.client_secret)
+        auth_manager = SpotifyClientCredentials(
+            client_id=config.SPOTIFY.client_id,
+            client_secret=config.SPOTIFY.client_secret,
+        )
         sp = spotipy.Spotify(auth_manager=auth_manager)
     except:
-        raise HTTPException(status_code=400, detail="Client ID and/or secret are incorrect")
+        raise HTTPException(
+            status_code=400, detail="Client ID and/or secret are incorrect"
+        )
 
     try:
-        playlist_name = sp.playlist(playlist_id)['name']
+        playlist_name = sp.playlist(playlist_id)["name"]
     except:
-        raise HTTPException(status_code=400, detail="Can not find playlist, is it a private playlist?")
+        raise HTTPException(
+            status_code=400, detail="Can not find playlist, is it a private playlist?"
+        )
 
-    config.SPOTIFY.playlists.append({
-        "id": playlist_id,
-        "type": playlist_type,
-        "name": playlist_name
-    })
+    config.SPOTIFY.playlists.append(
+        {"id": playlist_id, "type": playlist_type, "name": playlist_name}
+    )
     config_manager.save_config_file(config)
 
-    return HTTPException(status_code=200, detail=f"Playlist added {playlist_name}, ID: {playlist_id}")
+    return HTTPException(
+        status_code=200, detail=f"Playlist added {playlist_name}, ID: {playlist_id}"
+    )
 
 
 @router.delete("/playlist", description="Delete a playlist from the conversion list")
@@ -109,6 +124,9 @@ def delete_playlist(playlist_url_id: str):
         if playlist["id"] == playlist_id:
             config.SPOTIFY.playlists.remove(playlist)
             config_manager.save_config_file(config)
-            return HTTPException(status_code=200, detail=f"Playlist deleted {playlist['name']}, ID: {playlist_id}")
+            return HTTPException(
+                status_code=200,
+                detail=f"Playlist deleted {playlist['name']}, ID: {playlist_id}",
+            )
 
     raise HTTPException(status_code=400, detail=f"Playlist not found {playlist_id}")
