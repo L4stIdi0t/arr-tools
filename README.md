@@ -40,8 +40,6 @@ docker run --name arr-tools -p 9000:9000 -v $(pwd)/data:/app/backend/data ghcr.i
 
 Docker compose:
 ```yml
-version: '3.8'
-
 services:
   arr-tools:
     image: ghcr.io/l4stidi0t/arr-tools/main:latest
