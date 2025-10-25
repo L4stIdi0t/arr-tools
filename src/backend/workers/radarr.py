@@ -558,11 +558,11 @@ def run(dry: bool = False) -> Optional[Dict[str, Any]]:
         # Apply monitoring changes
         monitor_search_ids = manager.change_monitoring(monitorable_items, True)
         search_movie_ids.update(monitor_search_ids)
-        # manager.change_monitoring(unmonitorable_items, False)
+        manager.change_monitoring(unmonitorable_items, False)
 
         # Delete unmonitored files if enabled
-        # if config.RADARR.delete_unmonitored_files:
-        #     delete_unmonitored_files()
+        if config.RADARR.delete_unmonitored_files:
+            delete_unmonitored_files()
 
         # Perform searches with cooldown
         manager.search_movies_with_cooldown(search_movie_ids)

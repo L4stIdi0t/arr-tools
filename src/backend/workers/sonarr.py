@@ -939,16 +939,16 @@ def run(dry: bool = False):
         # Apply monitoring changes
         monitor_search_ids = manager.change_monitoring(monitorable_items, True)
         search_series_ids.update(monitor_search_ids)
-        # manager.change_monitoring(unmonitorable_items, False)
+        manager.change_monitoring(unmonitorable_items, False)
 
         # Apply episode monitoring changes
         episode_search_ids = manager.change_monitoring_episodes(monitor_episodes, True)
         search_series_ids.update(episode_search_ids)
-        # manager.change_monitoring_episodes(unmonitor_episodes, False)
+        manager.change_monitoring_episodes(unmonitor_episodes, False)
 
         # Delete unmonitored files if enabled
-        # if config.SONARR.delete_unmonitored_files:
-        #     delete_unmonitored_files()
+        if config.SONARR.delete_unmonitored_files:
+            delete_unmonitored_files()
 
         # Add recheck releases to search IDs
         search_series_ids.update(recheck_releases)
