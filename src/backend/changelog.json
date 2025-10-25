@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.2.4",
+    "added": [],
+    "removed": [],
+    "changed": [
+      "Improve performance for Sonarr and Radarr workers"
+    ]
+  },
+  {
     "version": "0.2.3",
     "added": [],
     "removed": [],
