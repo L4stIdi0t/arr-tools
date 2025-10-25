@@ -1,6 +1,6 @@
 **__pycache__
 /static/*
-/data/*
+/data
 
 # Editor directories and files
 .idea
