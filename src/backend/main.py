@@ -16,7 +16,7 @@ from utils.log_manager import LoggingManager
 from workers.workers import WorkerManager
 
 logging_manager = LoggingManager()
-logging_manager.log('Program is starting', level=logging.INFO)
+logging_manager.log("Program is starting", level=logging.INFO)
 
 app = FastAPI()
 
@@ -35,7 +35,7 @@ app.mount("/favicon", StaticFiles(directory="static/favicon"), name="favicon")
 
 @app.get("/{path:path}")
 async def read_index():
-    return FileResponse('./static/index.html')
+    return FileResponse("./static/index.html")
 
 
 def main_start():
