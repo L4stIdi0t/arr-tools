@@ -56,17 +56,17 @@ services:
 ### Tools
 * [Recyclarr](https://github.com/recyclarr/recyclarr): creating Quality Profiles
 * [Listrr](https://listrr.pro/): creating import lists
+* [MDBList](https://mdblist.com): creating import lists
 
 ## Want to-do:
 * Decaying watched episodes instead of instant delete
 * Expanded tag exclusion like disable unmonitoring
 * Expand filters and usage
 * Web configurable running intervals
-* Mass items selector(Arrs already have this but you need to hit a small radio button)
+* Mass items selector(Arrs already have this, but you need to hit a small radio button)
 * Import/export playlists from external tools like spotify
 * Convert music audio playlist to music video playlist
-* Debug tags
-* Support Readarr & Lidarr
+* Support Lidarr
 
 ## Possible issues:
 * Large libraries might be slow, especially Sonarr(tested on 2000 series library)
